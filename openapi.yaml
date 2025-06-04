@@ -1,539 +1,111 @@
 openapi: "3.1.0"
 info:
-  version: 1.0.0
-  title: User Management API
-  description: A comprehensive API for managing users with full CRUD operations
-  license:
-    name: MIT
+    version: 1.0.0
+    title: Swagger Petstore
+    license:
+        name: MIT
 servers:
-  - url: http://localhost:3001
-    description: Development server
+    - url: http://petstore.swagger.io/v1
 paths:
-  /users:
-    get:
-      summary: List all users
-      description: Retrieve a paginated list of users with optional filtering
-      operationId: listUsers
-      tags:
-        - users
-      parameters:
-        - name: page
-          in: query
-          description: Page number for pagination
-          required: false
-          schema:
-            type: integer
-            minimum: 1
-            default: 1
-        - name: limit
-          in: query
-          description: Number of items per page (max 100)
-          required: false
-          schema:
-            type: integer
-            minimum: 1
-            maximum: 100
-            default: 10
-        - name: role
-          in: query
-          description: Filter by user role
-          required: false
-          schema:
-            type: string
-            enum: [admin, user, guest]
-        - name: isActive
-          in: query
-          description: Filter by user active status
-          required: false
-          schema:
-            type: boolean
-      responses:
-        "200":
-          description: List of users retrieved successfully
-          headers:
-            x-total-count:
-              description: Total number of users
-              schema:
-                type: integer
-          content:
-            application/json:
-              schema:
-                $ref: "#/components/schemas/UsersListResponse"
-        "400":
-          description: Invalid query parameters
-          content:
-            application/json:
-              schema:
-                $ref: "#/components/schemas/ValidationError"
-    post:
-      summary: Create new user
-      description: Create a new user with the provided information
-      operationId: createUser
-      tags:
-        - users
-      requestBody:
-        required: true
-        content:
-          application/json:
-            schema:
-              $ref: "#/components/schemas/CreateUserRequest"
-      responses:
-        "201":
-          description: User created successfully
-          content:
-            application/json:
-              schema:
-                $ref: "#/components/schemas/User"
-        "400":
-          description: Invalid user data
-          content:
-            application/json:
-              schema:
-                $ref: "#/components/schemas/ValidationError"
-        "409":
-          description: User with email already exists
-          content:
-            application/json:
-              schema:
-                $ref: "#/components/schemas/ConflictError"
-  /users/{id}:
-    get:
-      summary: Get user by ID
-      description: Retrieve a specific user by their unique identifier
-      operationId: getUserById
-      tags:
-        - users
-      parameters:
-        - name: id
-          in: path
-          required: true
-          description: The unique identifier of the user
-          schema:
-            type: string
-            format: uuid
-      responses:
-        "200":
-          description: User found and returned successfully
-          content:
-            application/json:
-              schema:
-                $ref: "#/components/schemas/User"
-        "400":
-          description: Invalid user ID format
-          content:
-            application/json:
-              schema:
-                $ref: "#/components/schemas/ValidationError"
-        "404":
-          description: User not found
-          content:
-            application/json:
-              schema:
-                $ref: "#/components/schemas/NotFoundError"
-    put:
-      summary: Update user
-      description: Update an existing user with new information
-      operationId: updateUser
-      tags:
-        - users
-      parameters:
-        - name: id
-          in: path
-          required: true
-          description: The unique identifier of the user
-          schema:
-            type: string
-            format: uuid
-      requestBody:
-        required: true
-        content:
-          application/json:
-            schema:
-              $ref: "#/components/schemas/UpdateUserRequest"
-      responses:
-        "200":
-          description: User updated successfully
-          content:
-            application/json:
-              schema:
-                $ref: "#/components/schemas/User"
-        "400":
-          description: Invalid user ID or data
-          content:
-            application/json:
-              schema:
-                $ref: "#/components/schemas/ValidationError"
-        "404":
-          description: User not found
-          content:
-            application/json:
-              schema:
-                $ref: "#/components/schemas/NotFoundError"
-    delete:
-      summary: Delete user
-      description: Delete a user by their unique identifier
-      operationId: deleteUser
-      tags:
-        - users
-      parameters:
-        - name: id
-          in: path
-          required: true
-          description: The unique identifier of the user
-          schema:
-            type: string
-            format: uuid
-      responses:
-        "204":
-          description: User deleted successfully
-        "400":
-          description: Invalid user ID format
-          content:
-            application/json:
-              schema:
-                $ref: "#/components/schemas/ValidationError"
-        "404":
-          description: User not found
-          content:
-            application/json:
-              schema:
-                $ref: "#/components/schemas/NotFoundError"
-  /users/{id}/avatar:
-    post:
-      summary: Upload user avatar
-      description: Upload an avatar image for a specific user
-      operationId: uploadUserAvatar
-      tags:
-        - users
-      parameters:
-        - name: id
-          in: path
-          required: true
-          description: The unique identifier of the user
-          schema:
-            type: string
-            format: uuid
-      requestBody:
-        required: true
-        content:
-          multipart/form-data:
-            schema:
-              type: object
-              properties:
-                avatar:
-                  type: string
-                  format: binary
-                  description: Avatar image file
-              required:
-                - avatar
-      responses:
-        "200":
-          description: Avatar uploaded successfully
-          content:
-            application/json:
-              schema:
-                $ref: "#/components/schemas/AvatarUploadResponse"
-        "400":
-          description: Invalid file or user ID
-          content:
-            application/json:
-              schema:
-                $ref: "#/components/schemas/ValidationError"
-        "404":
-          description: User not found
-          content:
-            application/json:
-              schema:
-                $ref: "#/components/schemas/NotFoundError"
-        "413":
-          description: File too large
-          content:
-            application/json:
-              schema:
-                $ref: "#/components/schemas/FileTooLargeError"
-components:
-  schemas:
-    User:
-      type: object
-      required:
-        - id
-        - email
-        - name
-        - role
-        - createdAt
-        - isActive
-      properties:
-        id:
-          type: string
-          format: uuid
-          description: Unique identifier for the user
-          example: "123e4567-e89b-12d3-a456-426614174000"
-        email:
-          type: string
-          format: email
-          description: User's email address
-          example: "john@example.com"
-        name:
-          type: string
-          minLength: 1
-          maxLength: 100
-          description: User's full name
-          example: "John Doe"
-        role:
-          type: string
-          enum: [admin, user, guest]
-          description: User's role in the system
-          example: "user"
-        createdAt:
-          type: string
-          format: date-time
-          description: Timestamp when the user was created
-          example: "2024-01-01T00:00:00Z"
-        updatedAt:
-          type: string
-          format: date-time
-          description: Timestamp when the user was last updated
-          example: "2024-01-01T12:00:00Z"
-        isActive:
-          type: boolean
-          description: Whether the user account is active
-          example: true
-        avatarUrl:
-          type: string
-          format: uri
-          nullable: true
-          description: URL to the user's avatar image
-          example: "https://example.com/avatars/123e4567.jpg"
-        metadata:
-          type: object
-          additionalProperties:
-            type: string
-          description: Additional user metadata
-          example:
-            department: "Engineering"
-            location: "New York"
-    CreateUserRequest:
-      type: object
-      required:
-        - email
-        - name
-      properties:
-        email:
-          type: string
-          format: email
-          description: User's email address
-          example: "john@example.com"
-        name:
-          type: string
-          minLength: 1
-          maxLength: 100
-          description: User's full name
-          example: "John Doe"
-        role:
-          type: string
-          enum: [admin, user, guest]
-          default: user
-          description: User's role in the system
-          example: "user"
-        metadata:
-          type: object
-          additionalProperties:
-            type: string
-          description: Additional user metadata
-          example:
-            department: "Engineering"
-    UpdateUserRequest:
-      type: object
-      properties:
-        name:
-          type: string
-          minLength: 1
-          maxLength: 100
-          description: User's full name
-          example: "John Doe"
-        role:
-          type: string
-          enum: [admin, user, guest]
-          description: User's role in the system
-          example: "admin"
-        isActive:
-          type: boolean
-          description: Whether the user account is active
-          example: false
-        metadata:
-          type: object
-          additionalProperties:
-            type: string
-          description: Additional user metadata
-          example:
-            department: "Marketing"
-    UsersListResponse:
-      type: object
-      required:
-        - users
-        - pagination
-      properties:
-        users:
-          type: array
-          items:
-            $ref: "#/components/schemas/User"
-          description: List of users
-        pagination:
-          $ref: "#/components/schemas/Pagination"
-    Pagination:
-      type: object
-      required:
-        - page
-        - limit
-        - total
-        - totalPages
-      properties:
-        page:
-          type: integer
-          minimum: 1
-          description: Current page number
-          example: 1
-        limit:
-          type: integer
-          minimum: 1
-          maximum: 100
-          description: Number of items per page
-          example: 10
-        total:
-          type: integer
-          minimum: 0
-          description: Total number of items
-          example: 42
-        totalPages:
-          type: integer
-          minimum: 0
-          description: Total number of pages
-          example: 5
-    AvatarUploadResponse:
-      type: object
-      required:
-        - avatarUrl
-        - message
-      properties:
-        avatarUrl:
-          type: string
-          format: uri
-          description: URL to the uploaded avatar
-          example: "https://example.com/avatars/123e4567.jpg"
-        message:
-          type: string
-          description: Success message
-          example: "Avatar uploaded successfully"
-    ValidationError:
-      type: object
-      required:
-        - error
-        - message
-        - code
-      properties:
-        error:
-          type: string
-          enum: [validation_error]
-          description: Error type identifier
-          example: "validation_error"
-        message:
-          type: string
-          description: Human-readable error message
-          example: "Invalid input data"
-        code:
-          type: integer
-          enum: [400]
-          description: HTTP status code
-          example: 400
-        details:
-          type: object
-          required:
-            - issues
-          properties:
-            issues:
-              type: array
-              items:
-                type: object
-                required:
-                  - path
-                  - message
-                  - code
-                properties:
-                  path:
-                    type: array
-                    items:
+    /pets:
+        get:
+            summary: List all pets
+            operationId: listPets
+            tags:
+                - pets
+            parameters:
+                - name: limit
+                  in: query
+                  description: How many items to return at one time (max 100)
+                  required: false
+                  schema:
+                      type: integer
+                      format: int32
+            responses:
+                "200":
+                    description: A paged array of pets
+                    headers:
+                        x-next:
+                            description: A link to the next page of responses
+                            schema:
+                                type: string
+                    content:
+                        application/json:
+                            schema:
+                                $ref: "#/components/schemas/Pets"
+                default:
+                    description: unexpected error
+                    content:
+                        application/json:
+                            schema:
+                                $ref: "#/components/schemas/Error"
+        post:
+            summary: Create a pet
+            operationId: createPets
+            tags:
+                - pets
+            responses:
+                "201":
+                    description: Null response
+                default:
+                    description: unexpected error
+                    content:
+                        application/json:
+                            schema:
+                                $ref: "#/components/schemas/Error"
+    /pets/{petId}:
+        get:
+            summary: Info for a specific pet
+            operationId: showPetById
+            tags:
+                - pets
+            parameters:
+                - name: petId
+                  in: path
+                  required: true
+                  description: The id of the pet to retrieve
+                  schema:
                       type: string
-                    description: Path to the invalid field
-                    example: ["name"]
-                  message:
+            responses:
+                "200":
+                    description: Expected response to a valid request
+                    content:
+                        application/json:
+                            schema:
+                                $ref: "#/components/schemas/Pet"
+                default:
+                    description: unexpected error
+                    content:
+                        application/json:
+                            schema:
+                                $ref: "#/components/schemas/Error"
+components:
+    schemas:
+        Pet:
+            type: object
+            required:
+                - id
+                - name
+            properties:
+                id:
+                    type: integer
+                    format: int64
+                name:
                     type: string
-                    description: Validation error message
-                    example: "String must contain at least 1 character"
-                  code:
+                tag:
                     type: string
-                    description: Error code
-                    example: "too_small"
-          description: Detailed validation errors
-    NotFoundError:
-      type: object
-      required:
-        - error
-        - message
-        - code
-      properties:
-        error:
-          type: string
-          enum: [not_found]
-          description: Error type identifier
-          example: "not_found"
-        message:
-          type: string
-          description: Human-readable error message
-          example: "User not found"
-        code:
-          type: integer
-          enum: [404]
-          description: HTTP status code
-          example: 404
-    ConflictError:
-      type: object
-      required:
-        - error
-        - message
-        - code
-      properties:
-        error:
-          type: string
-          enum: [conflict]
-          description: Error type identifier
-          example: "conflict"
-        message:
-          type: string
-          description: Human-readable error message
-          example: "User with this email already exists"
-        code:
-          type: integer
-          enum: [409]
-          description: HTTP status code
-          example: 409
-    FileTooLargeError:
-      type: object
-      required:
-        - error
-        - message
-        - code
-      properties:
-        error:
-          type: string
-          enum: [file_too_large]
-          description: Error type identifier
-          example: "file_too_large"
-        message:
-          type: string
-          description: Human-readable error message
-          example: "File size exceeds the maximum limit of 5MB"
-        code:
-          type: integer
-          enum: [413]
-          description: HTTP status code
-          example: 413
+        Pets:
+            type: array
+            items:
+                $ref: "#/components/schemas/Pet"
+        Error:
+            type: object
+            required:
+                - code
+                - message
+            properties:
+                code:
+                    type: integer
+                    format: int32
+                message:
+                    type: string

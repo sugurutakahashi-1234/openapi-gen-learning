@@ -4,72 +4,35 @@
  */
 
 export interface paths {
-    "/users": {
+    "/pets": {
         parameters: {
             query?: never;
             header?: never;
             path?: never;
             cookie?: never;
         };
-        /**
-         * List all users
-         * @description Retrieve a paginated list of users with optional filtering
-         */
-        get: operations["listUsers"];
+        /** List all pets */
+        get: operations["listPets"];
         put?: never;
-        /**
-         * Create new user
-         * @description Create a new user with the provided information
-         */
-        post: operations["createUser"];
+        /** Create a pet */
+        post: operations["createPets"];
         delete?: never;
         options?: never;
         head?: never;
         patch?: never;
         trace?: never;
     };
-    "/users/{id}": {
+    "/pets/{petId}": {
         parameters: {
             query?: never;
             header?: never;
             path?: never;
             cookie?: never;
         };
-        /**
-         * Get user by ID
-         * @description Retrieve a specific user by their unique identifier
-         */
-        get: operations["getUserById"];
-        /**
-         * Update user
-         * @description Update an existing user with new information
-         */
-        put: operations["updateUser"];
-        post?: never;
-        /**
-         * Delete user
-         * @description Delete a user by their unique identifier
-         */
-        delete: operations["deleteUser"];
-        options?: never;
-        head?: never;
-        patch?: never;
-        trace?: never;
-    };
-    "/users/{id}/avatar": {
-        parameters: {
-            query?: never;
-            header?: never;
-            path?: never;
-            cookie?: never;
-        };
-        get?: never;
+        /** Info for a specific pet */
+        get: operations["showPetById"];
         put?: never;
-        /**
-         * Upload user avatar
-         * @description Upload an avatar image for a specific user
-         */
-        post: operations["uploadUserAvatar"];
+        post?: never;
         delete?: never;
         options?: never;
         head?: never;
@@ -80,257 +43,17 @@ export interface paths {
 export type webhooks = Record<string, never>;
 export interface components {
     schemas: {
-        User: {
-            /**
-             * Format: uuid
-             * @description Unique identifier for the user
-             * @example 123e4567-e89b-12d3-a456-426614174000
-             */
-            id: string;
-            /**
-             * Format: email
-             * @description User's email address
-             * @example john@example.com
-             */
-            email: string;
-            /**
-             * @description User's full name
-             * @example John Doe
-             */
+        Pet: {
+            /** Format: int64 */
+            id: number;
             name: string;
-            /**
-             * @description User's role in the system
-             * @example user
-             * @enum {string}
-             */
-            role: "admin" | "user" | "guest";
-            /**
-             * Format: date-time
-             * @description Timestamp when the user was created
-             * @example 2024-01-01T00:00:00Z
-             */
-            createdAt: string;
-            /**
-             * Format: date-time
-             * @description Timestamp when the user was last updated
-             * @example 2024-01-01T12:00:00Z
-             */
-            updatedAt?: string;
-            /**
-             * @description Whether the user account is active
-             * @example true
-             */
-            isActive: boolean;
-            /**
-             * Format: uri
-             * @description URL to the user's avatar image
-             * @example https://example.com/avatars/123e4567.jpg
-             */
-            avatarUrl?: string | null;
-            /**
-             * @description Additional user metadata
-             * @example {
-             *       "department": "Engineering",
-             *       "location": "New York"
-             *     }
-             */
-            metadata?: {
-                [key: string]: string;
-            };
+            tag?: string;
         };
-        CreateUserRequest: {
-            /**
-             * Format: email
-             * @description User's email address
-             * @example john@example.com
-             */
-            email: string;
-            /**
-             * @description User's full name
-             * @example John Doe
-             */
-            name: string;
-            /**
-             * @description User's role in the system
-             * @default user
-             * @example user
-             * @enum {string}
-             */
-            role: "admin" | "user" | "guest";
-            /**
-             * @description Additional user metadata
-             * @example {
-             *       "department": "Engineering"
-             *     }
-             */
-            metadata?: {
-                [key: string]: string;
-            };
-        };
-        UpdateUserRequest: {
-            /**
-             * @description User's full name
-             * @example John Doe
-             */
-            name?: string;
-            /**
-             * @description User's role in the system
-             * @example admin
-             * @enum {string}
-             */
-            role?: "admin" | "user" | "guest";
-            /**
-             * @description Whether the user account is active
-             * @example false
-             */
-            isActive?: boolean;
-            /**
-             * @description Additional user metadata
-             * @example {
-             *       "department": "Marketing"
-             *     }
-             */
-            metadata?: {
-                [key: string]: string;
-            };
-        };
-        UsersListResponse: {
-            /** @description List of users */
-            users: components["schemas"]["User"][];
-            pagination: components["schemas"]["Pagination"];
-        };
-        Pagination: {
-            /**
-             * @description Current page number
-             * @example 1
-             */
-            page: number;
-            /**
-             * @description Number of items per page
-             * @example 10
-             */
-            limit: number;
-            /**
-             * @description Total number of items
-             * @example 42
-             */
-            total: number;
-            /**
-             * @description Total number of pages
-             * @example 5
-             */
-            totalPages: number;
-        };
-        AvatarUploadResponse: {
-            /**
-             * Format: uri
-             * @description URL to the uploaded avatar
-             * @example https://example.com/avatars/123e4567.jpg
-             */
-            avatarUrl: string;
-            /**
-             * @description Success message
-             * @example Avatar uploaded successfully
-             */
+        Pets: components["schemas"]["Pet"][];
+        Error: {
+            /** Format: int32 */
+            code: number;
             message: string;
-        };
-        ValidationError: {
-            /**
-             * @description Error type identifier
-             * @example validation_error
-             * @enum {string}
-             */
-            error: "validation_error";
-            /**
-             * @description Human-readable error message
-             * @example Invalid input data
-             */
-            message: string;
-            /**
-             * @description HTTP status code
-             * @example 400
-             * @enum {integer}
-             */
-            code: 400;
-            /** @description Detailed validation errors */
-            details?: {
-                issues: {
-                    /**
-                     * @description Path to the invalid field
-                     * @example [
-                     *       "name"
-                     *     ]
-                     */
-                    path: string[];
-                    /**
-                     * @description Validation error message
-                     * @example String must contain at least 1 character
-                     */
-                    message: string;
-                    /**
-                     * @description Error code
-                     * @example too_small
-                     */
-                    code: string;
-                }[];
-            };
-        };
-        NotFoundError: {
-            /**
-             * @description Error type identifier
-             * @example not_found
-             * @enum {string}
-             */
-            error: "not_found";
-            /**
-             * @description Human-readable error message
-             * @example User not found
-             */
-            message: string;
-            /**
-             * @description HTTP status code
-             * @example 404
-             * @enum {integer}
-             */
-            code: 404;
-        };
-        ConflictError: {
-            /**
-             * @description Error type identifier
-             * @example conflict
-             * @enum {string}
-             */
-            error: "conflict";
-            /**
-             * @description Human-readable error message
-             * @example User with this email already exists
-             */
-            message: string;
-            /**
-             * @description HTTP status code
-             * @example 409
-             * @enum {integer}
-             */
-            code: 409;
-        };
-        FileTooLargeError: {
-            /**
-             * @description Error type identifier
-             * @example file_too_large
-             * @enum {string}
-             */
-            error: "file_too_large";
-            /**
-             * @description Human-readable error message
-             * @example File size exceeds the maximum limit of 5MB
-             */
-            message: string;
-            /**
-             * @description HTTP status code
-             * @example 413
-             * @enum {integer}
-             */
-            code: 413;
         };
     };
     responses: never;
@@ -341,17 +64,11 @@ export interface components {
 }
 export type $defs = Record<string, never>;
 export interface operations {
-    listUsers: {
+    listPets: {
         parameters: {
             query?: {
-                /** @description Page number for pagination */
-                page?: number;
-                /** @description Number of items per page (max 100) */
+                /** @description How many items to return at one time (max 100) */
                 limit?: number;
-                /** @description Filter by user role */
-                role?: "admin" | "user" | "guest";
-                /** @description Filter by user active status */
-                isActive?: boolean;
             };
             header?: never;
             path?: never;
@@ -359,251 +76,83 @@ export interface operations {
         };
         requestBody?: never;
         responses: {
-            /** @description List of users retrieved successfully */
+            /** @description A paged array of pets */
             200: {
                 headers: {
-                    /** @description Total number of users */
-                    "x-total-count"?: number;
+                    /** @description A link to the next page of responses */
+                    "x-next"?: string;
                     [name: string]: unknown;
                 };
                 content: {
-                    "application/json": components["schemas"]["UsersListResponse"];
+                    "application/json": components["schemas"]["Pets"];
                 };
             };
-            /** @description Invalid query parameters */
-            400: {
+            /** @description unexpected error */
+            default: {
                 headers: {
                     [name: string]: unknown;
                 };
                 content: {
-                    "application/json": components["schemas"]["ValidationError"];
+                    "application/json": components["schemas"]["Error"];
                 };
             };
         };
     };
-    createUser: {
+    createPets: {
         parameters: {
             query?: never;
             header?: never;
             path?: never;
             cookie?: never;
         };
-        requestBody: {
-            content: {
-                "application/json": components["schemas"]["CreateUserRequest"];
-            };
-        };
+        requestBody?: never;
         responses: {
-            /** @description User created successfully */
+            /** @description Null response */
             201: {
-                headers: {
-                    [name: string]: unknown;
-                };
-                content: {
-                    "application/json": components["schemas"]["User"];
-                };
-            };
-            /** @description Invalid user data */
-            400: {
-                headers: {
-                    [name: string]: unknown;
-                };
-                content: {
-                    "application/json": components["schemas"]["ValidationError"];
-                };
-            };
-            /** @description User with email already exists */
-            409: {
-                headers: {
-                    [name: string]: unknown;
-                };
-                content: {
-                    "application/json": components["schemas"]["ConflictError"];
-                };
-            };
-        };
-    };
-    getUserById: {
-        parameters: {
-            query?: never;
-            header?: never;
-            path: {
-                /** @description The unique identifier of the user */
-                id: string;
-            };
-            cookie?: never;
-        };
-        requestBody?: never;
-        responses: {
-            /** @description User found and returned successfully */
-            200: {
-                headers: {
-                    [name: string]: unknown;
-                };
-                content: {
-                    "application/json": components["schemas"]["User"];
-                };
-            };
-            /** @description Invalid user ID format */
-            400: {
-                headers: {
-                    [name: string]: unknown;
-                };
-                content: {
-                    "application/json": components["schemas"]["ValidationError"];
-                };
-            };
-            /** @description User not found */
-            404: {
-                headers: {
-                    [name: string]: unknown;
-                };
-                content: {
-                    "application/json": components["schemas"]["NotFoundError"];
-                };
-            };
-        };
-    };
-    updateUser: {
-        parameters: {
-            query?: never;
-            header?: never;
-            path: {
-                /** @description The unique identifier of the user */
-                id: string;
-            };
-            cookie?: never;
-        };
-        requestBody: {
-            content: {
-                "application/json": components["schemas"]["UpdateUserRequest"];
-            };
-        };
-        responses: {
-            /** @description User updated successfully */
-            200: {
-                headers: {
-                    [name: string]: unknown;
-                };
-                content: {
-                    "application/json": components["schemas"]["User"];
-                };
-            };
-            /** @description Invalid user ID or data */
-            400: {
-                headers: {
-                    [name: string]: unknown;
-                };
-                content: {
-                    "application/json": components["schemas"]["ValidationError"];
-                };
-            };
-            /** @description User not found */
-            404: {
-                headers: {
-                    [name: string]: unknown;
-                };
-                content: {
-                    "application/json": components["schemas"]["NotFoundError"];
-                };
-            };
-        };
-    };
-    deleteUser: {
-        parameters: {
-            query?: never;
-            header?: never;
-            path: {
-                /** @description The unique identifier of the user */
-                id: string;
-            };
-            cookie?: never;
-        };
-        requestBody?: never;
-        responses: {
-            /** @description User deleted successfully */
-            204: {
                 headers: {
                     [name: string]: unknown;
                 };
                 content?: never;
             };
-            /** @description Invalid user ID format */
-            400: {
+            /** @description unexpected error */
+            default: {
                 headers: {
                     [name: string]: unknown;
                 };
                 content: {
-                    "application/json": components["schemas"]["ValidationError"];
-                };
-            };
-            /** @description User not found */
-            404: {
-                headers: {
-                    [name: string]: unknown;
-                };
-                content: {
-                    "application/json": components["schemas"]["NotFoundError"];
+                    "application/json": components["schemas"]["Error"];
                 };
             };
         };
     };
-    uploadUserAvatar: {
+    showPetById: {
         parameters: {
             query?: never;
             header?: never;
             path: {
-                /** @description The unique identifier of the user */
-                id: string;
+                /** @description The id of the pet to retrieve */
+                petId: string;
             };
             cookie?: never;
         };
-        requestBody: {
-            content: {
-                "multipart/form-data": {
-                    /**
-                     * Format: binary
-                     * @description Avatar image file
-                     */
-                    avatar: string;
-                };
-            };
-        };
+        requestBody?: never;
         responses: {
-            /** @description Avatar uploaded successfully */
+            /** @description Expected response to a valid request */
             200: {
                 headers: {
                     [name: string]: unknown;
                 };
                 content: {
-                    "application/json": components["schemas"]["AvatarUploadResponse"];
+                    "application/json": components["schemas"]["Pet"];
                 };
             };
-            /** @description Invalid file or user ID */
-            400: {
+            /** @description unexpected error */
+            default: {
                 headers: {
                     [name: string]: unknown;
                 };
                 content: {
-                    "application/json": components["schemas"]["ValidationError"];
-                };
-            };
-            /** @description User not found */
-            404: {
-                headers: {
-                    [name: string]: unknown;
-                };
-                content: {
-                    "application/json": components["schemas"]["NotFoundError"];
-                };
-            };
-            /** @description File too large */
-            413: {
-                headers: {
-                    [name: string]: unknown;
-                };
-                content: {
-                    "application/json": components["schemas"]["FileTooLargeError"];
+                    "application/json": components["schemas"]["Error"];
                 };
             };
         };
