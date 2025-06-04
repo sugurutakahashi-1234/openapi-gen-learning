@@ -2,35 +2,178 @@
 
 import { z } from 'zod';
 
-export const zPet = z.object({
-    id: z.coerce.bigint(),
-    name: z.string(),
-    tag: z.string().optional()
+export const zUser = z.object({
+    id: z.string().uuid(),
+    email: z.string().email(),
+    name: z.string().min(1).max(100),
+    role: z.enum([
+        'admin',
+        'user',
+        'guest'
+    ]),
+    createdAt: z.string().datetime(),
+    updatedAt: z.string().datetime().optional(),
+    isActive: z.boolean(),
+    avatarUrl: z.string().url().optional(),
+    metadata: z.object({}).optional()
 });
 
-export const zPets = z.array(zPet);
+export const zCreateUserRequest = z.object({
+    email: z.string().email(),
+    name: z.string().min(1).max(100),
+    role: z.enum([
+        'admin',
+        'user',
+        'guest'
+    ]).optional(),
+    metadata: z.object({}).optional()
+});
 
-export const zError = z.object({
-    code: z.number().int(),
+export const zUpdateUserRequest = z.object({
+    name: z.string().min(1).max(100).optional(),
+    role: z.enum([
+        'admin',
+        'user',
+        'guest'
+    ]).optional(),
+    isActive: z.boolean().optional(),
+    metadata: z.object({}).optional()
+});
+
+export const zPagination = z.object({
+    page: z.number().int().gte(1),
+    limit: z.number().int().gte(1).lte(100),
+    total: z.number().int().gte(0),
+    totalPages: z.number().int().gte(0)
+});
+
+export const zUsersListResponse = z.object({
+    users: z.array(zUser),
+    pagination: zPagination
+});
+
+export const zAvatarUploadResponse = z.object({
+    avatarUrl: z.string().url(),
     message: z.string()
 });
 
-/**
- * How many items to return at one time (max 100)
- */
-export const zListPetsParameterLimit = z.number().int();
+export const zValidationError = z.object({
+    error: z.enum([
+        'validation_error'
+    ]),
+    message: z.string(),
+    code: z.unknown(),
+    details: z.object({
+        issues: z.array(z.object({
+            path: z.array(z.string()),
+            message: z.string(),
+            code: z.string()
+        }))
+    }).optional()
+});
+
+export const zNotFoundError = z.object({
+    error: z.enum([
+        'not_found'
+    ]),
+    message: z.string(),
+    code: z.unknown()
+});
+
+export const zConflictError = z.object({
+    error: z.enum([
+        'conflict'
+    ]),
+    message: z.string(),
+    code: z.unknown()
+});
+
+export const zFileTooLargeError = z.object({
+    error: z.enum([
+        'file_too_large'
+    ]),
+    message: z.string(),
+    code: z.unknown()
+});
 
 /**
- * A paged array of pets
+ * Page number for pagination
  */
-export const zListPetsResponse = zPets;
+export const zListUsersParameterPage = z.number().int().gte(1).default(1);
 
 /**
- * The id of the pet to retrieve
+ * Number of items per page (max 100)
  */
-export const zShowPetByIdParameterPetId = z.string();
+export const zListUsersParameterLimit = z.number().int().gte(1).lte(100).default(10);
 
 /**
- * Expected response to a valid request
+ * Filter by user role
  */
-export const zShowPetByIdResponse = zPet;
+export const zListUsersParameterRole = z.enum([
+    'admin',
+    'user',
+    'guest'
+]);
+
+/**
+ * Filter by user active status
+ */
+export const zListUsersParameterIsActive = z.boolean();
+
+/**
+ * List of users retrieved successfully
+ */
+export const zListUsersResponse = zUsersListResponse;
+
+export const zCreateUserData = zCreateUserRequest;
+
+/**
+ * User created successfully
+ */
+export const zCreateUserResponse = zUser;
+
+/**
+ * The unique identifier of the user
+ */
+export const zDeleteUserParameterId = z.string().uuid();
+
+/**
+ * User deleted successfully
+ */
+export const zDeleteUserResponse = z.void();
+
+/**
+ * The unique identifier of the user
+ */
+export const zGetUserByIdParameterId = z.string().uuid();
+
+/**
+ * User found and returned successfully
+ */
+export const zGetUserByIdResponse = zUser;
+
+export const zUpdateUserData = zUpdateUserRequest;
+
+/**
+ * The unique identifier of the user
+ */
+export const zUpdateUserParameterId = z.string().uuid();
+
+/**
+ * User updated successfully
+ */
+export const zUpdateUserResponse = zUser;
+
+export const zUploadUserAvatarData = z.object({
+    avatar: z.string()
+});
+
+/**
+ * The unique identifier of the user
+ */
+export const zUploadUserAvatarParameterId = z.string().uuid();
+
+/**
+ * Avatar uploaded successfully
+ */
+export const zUploadUserAvatarResponse = zAvatarUploadResponse;

@@ -8,7 +8,6 @@ import {
   zListPetsParameterLimit,
   zShowPetByIdParameterPetId 
 } from '../../generators/hey-api-zod/zod.gen';
-import type { Pet, Pets } from '../../generators/hey-api/types.gen';
 
 // Create client with base URL
 const client = createClient({
@@ -96,12 +95,12 @@ export async function demonstrateHeyApiZodClient() {
 }
 
 // Utility functions for validation
-export function validatePetData(data: unknown): Pet {
-  return zPet.parse(data) as Pet;
+export function validatePetData(data: unknown): ValidatedPet {
+  return zPet.parse(data);
 }
 
-export function validatePetsData(data: unknown): Pets {
-  return zPets.parse(data) as Pets;
+export function validatePetsData(data: unknown): ValidatedPets {
+  return zPets.parse(data);
 }
 
 export function safeParsePet(data: unknown) {

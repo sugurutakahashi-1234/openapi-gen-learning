@@ -71,7 +71,7 @@
 <body>
     <h1>OpenAPI SDK Generator Comparison</h1>
     <p class="description">
-        Interactive comparison of three TypeScript OpenAPI SDK generators: openapi-zod-client + Zodios, @hey-api/openapi-ts + client-fetch, and openapi-typescript + openapi-fetch
+        Interactive comparison of four TypeScript OpenAPI SDK approaches: openapi-zod-client + Zodios, @hey-api/openapi-ts + client-fetch, @hey-api/openapi-ts + Zod, and openapi-typescript + openapi-fetch
     </p>
 
     <div class="container">
@@ -94,6 +94,15 @@
         </div>
 
         <div class="sdk-demo">
+            <h3>@hey-api/openapi-ts + Zod</h3>
+            <p>Hey API client with Zod validation for best of both worlds</p>
+            <button onclick="runHeyApiZodDemo()">Run Demo</button>
+            <button onclick="showHeyApiZodTypes()">Show Types</button>
+            <button class="clear-btn" onclick="clearOutput('heyapizod')">Clear</button>
+            <div id="heyapizod-output" class="output"></div>
+        </div>
+
+        <div class="sdk-demo">
             <h3>openapi-typescript + openapi-fetch</h3>
             <p>Minimal runtime with strong TypeScript inference</p>
             <button onclick="runOpenApiTsDemo()">Run Demo</button>
@@ -106,11 +115,13 @@
     <script type="module">
         import { demonstrateZodClient } from './clients/zod-client-demo/index.ts';
         import { demonstrateHeyApiClient } from './clients/hey-api-demo/index.ts';
+        import { demonstrateHeyApiZodClient } from './clients/hey-api-zod-demo/index.ts';
         import { demonstrateOpenApiTypescriptClient } from './clients/openapi-typescript-demo/index.ts';
 
         // Make functions globally available
         window.demonstrateZodClient = demonstrateZodClient;
         window.demonstrateHeyApiClient = demonstrateHeyApiClient;
+        window.demonstrateHeyApiZodClient = demonstrateHeyApiZodClient;
         window.demonstrateOpenApiTypescriptClient = demonstrateOpenApiTypescriptClient;
 
         window.runZodiosDemo = async () => {
@@ -196,6 +207,33 @@
             console.error = originalError;
         };
 
+        window.runHeyApiZodDemo = async () => {
+            const output = document.getElementById('heyapizod-output');
+            output.textContent = 'Running Hey API + Zod demo...\n';
+            
+            const originalLog = console.log;
+            const originalError = console.error;
+            
+            console.log = (...args) => {
+                output.textContent += args.join(' ') + '\n';
+                originalLog(...args);
+            };
+            
+            console.error = (...args) => {
+                output.textContent += 'ERROR: ' + args.join(' ') + '\n';
+                originalError(...args);
+            };
+            
+            try {
+                await demonstrateHeyApiZodClient();
+            } catch (error) {
+                output.textContent += 'CAUGHT ERROR: ' + error.message + '\n';
+            }
+            
+            console.log = originalLog;
+            console.error = originalError;
+        };
+
         window.showZodiosTypes = () => {
             const output = document.getElementById('zodios-output');
             output.textContent = `Zodios Type Examples:
@@ -251,6 +289,38 @@ Features:
 ✅ Error handling types
 ✅ Fetch-based client
 ❌ No runtime validation
+`;
+        };
+
+        window.showHeyApiZodTypes = () => {
+            const output = document.getElementById('heyapizod-output');
+            output.textContent = `Hey API + Zod Examples:
+
+// Hey API service functions
+export const listPets = (options) => {
+  return client.get<ListPetsResponses, ListPetsErrors>({
+    url: '/pets'
+  });
+};
+
+// Generated Zod schemas
+export const zPet = z.object({
+  id: z.coerce.bigint(),
+  name: z.string(),
+  tag: z.string().optional()
+});
+
+// Combined usage
+const response = await listPets({ client, query: { limit: 10 } });
+const validatedData = zPet.parse(response.data);
+
+Features:
+✅ Hey API convenience functions
+✅ Zod runtime validation
+✅ TypeScript types
+✅ Best of both worlds
+✅ Flexible validation approach
+❌ Requires manual validation calls
 `;
         };
 

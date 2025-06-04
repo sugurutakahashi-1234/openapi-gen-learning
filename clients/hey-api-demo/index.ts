@@ -1,9 +1,9 @@
 import { createClient } from '@hey-api/client-fetch';
-import { listPets, createPets, showPetById } from '../../generators/hey-api/sdk.gen';
+import { listUsers, createUser, getUserById } from '../../generators/hey-api/sdk.gen';
 
 // Create client with base URL
 const client = createClient({
-  baseUrl: 'http://petstore.swagger.io/v1'
+  baseUrl: 'http://localhost:3001'
 });
 
 // Demo functions
@@ -11,32 +11,39 @@ export async function demonstrateHeyApiClient() {
   console.log("=== Hey API Client Demo ===");
   
   try {
-    // List pets
-    console.log("Fetching pets...");
-    const petsResponse = await listPets({ 
+    // List users
+    console.log("Fetching users...");
+    const usersResponse = await listUsers({ 
       client,
       query: { limit: 10 }
     });
     
-    if (petsResponse.data) {
-      console.log("Pets:", petsResponse.data);
+    if (usersResponse.data) {
+      console.log("Users:", usersResponse.data);
     }
     
-    // Get specific pet
-    console.log("Fetching pet by ID...");
-    const petResponse = await showPetById({ 
+    // Get specific user
+    console.log("Fetching user by ID...");
+    const userResponse = await getUserById({ 
       client,
-      path: { petId: "1" }
+      path: { id: "123e4567-e89b-12d3-a456-426614174000" }
     });
     
-    if (petResponse.data) {
-      console.log("Pet:", petResponse.data);
+    if (userResponse.data) {
+      console.log("User:", userResponse.data);
     }
     
-    // Create pet (this will likely fail since we're using a mock API)
-    console.log("Creating pet...");
-    const createResponse = await createPets({ client });
-    console.log("Pet created successfully:", createResponse);
+    // Create user
+    console.log("Creating user...");
+    const createResponse = await createUser({ 
+      client,
+      body: {
+        email: "new@example.com",
+        name: "New User",
+        role: "user"
+      }
+    });
+    console.log("User created successfully:", createResponse);
     
   } catch (error) {
     console.error("Error:", error);
@@ -44,6 +51,6 @@ export async function demonstrateHeyApiClient() {
 }
 
 // Type examples - re-export for convenience
-export type { Pet, Pets } from '../../generators/hey-api/types.gen';
+export type { User, UsersListResponse } from '../../generators/hey-api/types.gen';
 
 export { client as heyApiClient };
