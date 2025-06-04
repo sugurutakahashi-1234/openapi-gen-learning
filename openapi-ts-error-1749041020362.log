@@ -1,0 +1,9 @@
+_openapiTs.defaultPlugins is not iterable
+TypeError: _openapiTs.defaultPlugins is not iterable
+    at /Users/sugurutakahashi/git/openapi-gen-learning/hey-api-zod.config.js:7:17
+    at async Function.import (/Users/sugurutakahashi/git/openapi-gen-learning/node_modules/jiti/dist/jiti.cjs:1:199772)
+    at async resolveConfig (/Users/sugurutakahashi/git/openapi-gen-learning/node_modules/c12/dist/shared/c12.CLRr5qYj.cjs:360:18)
+    at async Object.loadConfig (/Users/sugurutakahashi/git/openapi-gen-learning/node_modules/c12/dist/shared/c12.CLRr5qYj.cjs:164:23)
+    at async Qm (/Users/sugurutakahashi/git/openapi-gen-learning/node_modules/@hey-api/openapi-ts/dist/index.cjs:1327:6896)
+    at async Xm (/Users/sugurutakahashi/git/openapi-gen-learning/node_modules/@hey-api/openapi-ts/dist/index.cjs:1327:8164)
+    at async start (/Users/sugurutakahashi/git/openapi-gen-learning/node_modules/@hey-api/openapi-ts/bin/index.cjs:78:5)

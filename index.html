@@ -1,0 +1,292 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>OpenAPI SDK Comparison</title>
+    <style>
+        body {
+            font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+            max-width: 1200px;
+            margin: 0 auto;
+            padding: 20px;
+            line-height: 1.6;
+        }
+        .container {
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(350px, 1fr));
+            gap: 20px;
+            margin-top: 20px;
+        }
+        .sdk-demo {
+            border: 1px solid #ddd;
+            border-radius: 8px;
+            padding: 20px;
+            background: #f9f9f9;
+        }
+        .sdk-demo h3 {
+            margin-top: 0;
+            color: #333;
+        }
+        button {
+            background: #007acc;
+            color: white;
+            border: none;
+            padding: 10px 20px;
+            border-radius: 4px;
+            cursor: pointer;
+            margin: 5px 5px 5px 0;
+        }
+        button:hover {
+            background: #005a9e;
+        }
+        .output {
+            background: #000;
+            color: #00ff00;
+            padding: 15px;
+            border-radius: 4px;
+            margin-top: 10px;
+            font-family: 'Courier New', monospace;
+            font-size: 12px;
+            height: 300px;
+            overflow-y: auto;
+            white-space: pre-wrap;
+        }
+        .clear-btn {
+            background: #666;
+            font-size: 12px;
+            padding: 5px 10px;
+        }
+        h1 {
+            text-align: center;
+            color: #333;
+        }
+        .description {
+            text-align: center;
+            margin-bottom: 30px;
+            color: #666;
+        }
+    </style>
+</head>
+<body>
+    <h1>OpenAPI SDK Generator Comparison</h1>
+    <p class="description">
+        Interactive comparison of three TypeScript OpenAPI SDK generators: openapi-zod-client + Zodios, @hey-api/openapi-ts + client-fetch, and openapi-typescript + openapi-fetch
+    </p>
+
+    <div class="container">
+        <div class="sdk-demo">
+            <h3>openapi-zod-client + Zodios</h3>
+            <p>Runtime validation with Zod schemas and type-safe API client</p>
+            <button onclick="runZodiosDemo()">Run Demo</button>
+            <button onclick="showZodiosTypes()">Show Types</button>
+            <button class="clear-btn" onclick="clearOutput('zodios')">Clear</button>
+            <div id="zodios-output" class="output"></div>
+        </div>
+
+        <div class="sdk-demo">
+            <h3>@hey-api/openapi-ts + client-fetch</h3>
+            <p>Modern fetch-based client with TypeScript types</p>
+            <button onclick="runHeyApiDemo()">Run Demo</button>
+            <button onclick="showHeyApiTypes()">Show Types</button>
+            <button class="clear-btn" onclick="clearOutput('heyapi')">Clear</button>
+            <div id="heyapi-output" class="output"></div>
+        </div>
+
+        <div class="sdk-demo">
+            <h3>openapi-typescript + openapi-fetch</h3>
+            <p>Minimal runtime with strong TypeScript inference</p>
+            <button onclick="runOpenApiTsDemo()">Run Demo</button>
+            <button onclick="showOpenApiTsTypes()">Show Types</button>
+            <button class="clear-btn" onclick="clearOutput('openapits')">Clear</button>
+            <div id="openapits-output" class="output"></div>
+        </div>
+    </div>
+
+    <script type="module">
+        import { demonstrateZodClient } from './clients/zod-client-demo/index.ts';
+        import { demonstrateHeyApiClient } from './clients/hey-api-demo/index.ts';
+        import { demonstrateOpenApiTypescriptClient } from './clients/openapi-typescript-demo/index.ts';
+
+        // Make functions globally available
+        window.demonstrateZodClient = demonstrateZodClient;
+        window.demonstrateHeyApiClient = demonstrateHeyApiClient;
+        window.demonstrateOpenApiTypescriptClient = demonstrateOpenApiTypescriptClient;
+
+        window.runZodiosDemo = async () => {
+            const output = document.getElementById('zodios-output');
+            output.textContent = 'Running Zodios demo...\n';
+            
+            // Capture console output
+            const originalLog = console.log;
+            const originalError = console.error;
+            
+            console.log = (...args) => {
+                output.textContent += args.join(' ') + '\n';
+                originalLog(...args);
+            };
+            
+            console.error = (...args) => {
+                output.textContent += 'ERROR: ' + args.join(' ') + '\n';
+                originalError(...args);
+            };
+            
+            try {
+                await demonstrateZodClient();
+            } catch (error) {
+                output.textContent += 'CAUGHT ERROR: ' + error.message + '\n';
+            }
+            
+            // Restore console
+            console.log = originalLog;
+            console.error = originalError;
+        };
+
+        window.runHeyApiDemo = async () => {
+            const output = document.getElementById('heyapi-output');
+            output.textContent = 'Running Hey API demo...\n';
+            
+            const originalLog = console.log;
+            const originalError = console.error;
+            
+            console.log = (...args) => {
+                output.textContent += args.join(' ') + '\n';
+                originalLog(...args);
+            };
+            
+            console.error = (...args) => {
+                output.textContent += 'ERROR: ' + args.join(' ') + '\n';
+                originalError(...args);
+            };
+            
+            try {
+                await demonstrateHeyApiClient();
+            } catch (error) {
+                output.textContent += 'CAUGHT ERROR: ' + error.message + '\n';
+            }
+            
+            console.log = originalLog;
+            console.error = originalError;
+        };
+
+        window.runOpenApiTsDemo = async () => {
+            const output = document.getElementById('openapits-output');
+            output.textContent = 'Running OpenAPI TypeScript demo...\n';
+            
+            const originalLog = console.log;
+            const originalError = console.error;
+            
+            console.log = (...args) => {
+                output.textContent += args.join(' ') + '\n';
+                originalLog(...args);
+            };
+            
+            console.error = (...args) => {
+                output.textContent += 'ERROR: ' + args.join(' ') + '\n';
+                originalError(...args);
+            };
+            
+            try {
+                await demonstrateOpenApiTypescriptClient();
+            } catch (error) {
+                output.textContent += 'CAUGHT ERROR: ' + error.message + '\n';
+            }
+            
+            console.log = originalLog;
+            console.error = originalError;
+        };
+
+        window.showZodiosTypes = () => {
+            const output = document.getElementById('zodios-output');
+            output.textContent = `Zodios Type Examples:
+
+// Runtime validation with Zod
+const Pet = z.object({
+  id: z.number().int(),
+  name: z.string(),
+  tag: z.string().optional(),
+}).passthrough();
+
+// Inferred TypeScript types
+type PetType = z.infer<typeof Pet>;
+
+// API client with runtime validation
+const api = new Zodios("http://...", endpoints);
+const pets = await api.listPets({ queries: { limit: 10 } });
+
+Features:
+✅ Runtime validation
+✅ Type inference from Zod schemas  
+✅ Request/response validation
+✅ Error handling with validation errors
+`;
+        };
+
+        window.showHeyApiTypes = () => {
+            const output = document.getElementById('heyapi-output');
+            output.textContent = `Hey API Type Examples:
+
+// Generated TypeScript interfaces
+export interface Pet {
+  id: number;
+  name: string;
+  tag?: string;
+}
+
+// Service functions
+export const listPets = (options) => {
+  return client.get<ListPetsResponse, ListPetsError>({
+    url: '/pets'
+  });
+};
+
+// Usage
+const { data, error } = await listPets({ 
+  query: { limit: 10 }
+});
+
+Features:
+✅ Generated service functions
+✅ TypeScript interfaces
+✅ Error handling types
+✅ Fetch-based client
+❌ No runtime validation
+`;
+        };
+
+        window.showOpenApiTsTypes = () => {
+            const output = document.getElementById('openapits-output');
+            output.textContent = `OpenAPI TypeScript Examples:
+
+// Generated path types
+export interface paths {
+  "/pets": {
+    get: operations["listPets"];
+    post: operations["createPets"];
+  };
+}
+
+// Typed client
+const client = createClient<paths>({ baseUrl: "..." });
+
+// Usage with full type inference
+const { data, error } = await client.GET("/pets", {
+  params: { query: { limit: 10 } }
+});
+
+Features:
+✅ Minimal runtime
+✅ Strong type inference
+✅ Path-based typing
+✅ Discriminated unions for responses
+❌ No runtime validation
+❌ Manual client usage
+`;
+        };
+
+        window.clearOutput = (id) => {
+            document.getElementById(id + '-output').textContent = '';
+        };
+    </script>
+</body>
+</html>
