@@ -24,7 +24,7 @@ export async function demonstrateHeyApiClient() {
     
     // Get specific pet
     console.log("Fetching pet by ID...");
-    const petResponse = await showPetById({ 
+    const petResponse = await showPetById<true>({ 
       client,
       path: { petId: "1" }
     });
