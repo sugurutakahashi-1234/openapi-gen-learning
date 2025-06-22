@@ -2,7 +2,7 @@
  * Posts関連のReact Query Hooks with Auto-Generated Zod Validation
  *
  * Orvalで自動生成されたZodスキーマを使用したバリデーション付きのフック
- * APIレスポンスをZodスキーマで検証し、型安全性を高める
+ * stack-oatsのパターンに従い、簡潔に実装
  */
 import { useQueryClient } from "@tanstack/react-query";
 import {
@@ -19,208 +19,112 @@ import type {
   GetPostsApiParams,
   UpdatePost,
 } from "../generated/model";
-import {
-  getPostsApiResponse,
-  getPostsByIdApiResponse,
-  postPostsApiBody,
-  putPostsByIdApiBody,
-} from "../generated/zod";
+import { postPostsApiBody, putPostsByIdApiBody } from "../generated/zod";
 
 /**
- * バリデーションエラーを扱うカスタムエラークラス
- */
-export class ZodValidationError extends Error {
-  constructor(
-    message: string,
-    public zodError: unknown,
-  ) {
-    super(message);
-    this.name = "ZodValidationError";
-  }
-}
-
-/**
- * 投稿一覧を取得するフック（自動生成Zodバリデーション付き）
+ * 投稿一覧を取得するフック
  */
 export const usePostsWithGeneratedValidation = (params?: GetPostsApiParams) => {
-  const query = useGetPostsApi(params, {
-    query: {
-      select: (response) => {
-        try {
-          const validated = getPostsApiResponse.parse(response.data);
-          return validated;
-        } catch (error) {
-          throw new ZodValidationError(
-            "レスポンスのバリデーションに失敗しました",
-            error,
-          );
-        }
-      },
-    },
-  });
-
-  return query;
+  return useGetPostsApi(params);
 };
 
 /**
- * 投稿を個別に取得するフック（自動生成Zodバリデーション付き）
+ * 投稿を個別に取得するフック
  */
 export const usePostWithGeneratedValidation = (id: string) => {
-  const query = useGetPostsByIdApi(id, {
-    query: {
-      select: (response) => {
-        try {
-          const validated = getPostsByIdApiResponse.parse(response.data);
-          return validated;
-        } catch (error) {
-          throw new ZodValidationError(
-            "レスポンスのバリデーションに失敗しました",
-            error,
-          );
-        }
-      },
-    },
-  });
-
-  return query;
+  return useGetPostsByIdApi(id);
 };
 
 /**
- * 投稿を作成するフック（自動生成Zodバリデーション付き）
+ * 投稿を作成するフック
+ *
+ * 自動生成されたZodスキーマでバリデーション
  */
 export const useCreatePostWithGeneratedValidation = () => {
   const queryClient = useQueryClient();
-  const baseMutation = usePostPostsApi({
-    mutation: {
-      onSuccess: () => {
-        queryClient.invalidateQueries({
-          queryKey: getGetPostsApiQueryKey(),
-        });
+  const mutation = usePostPostsApi();
+
+  const createPost = async (data: CreatePost) => {
+    // バリデーション実行
+    const validatedData = postPostsApiBody.parse(data);
+
+    return mutation.mutateAsync(
+      { data: validatedData as CreatePost },
+      {
+        onSuccess: () => {
+          queryClient.invalidateQueries({
+            queryKey: getGetPostsApiQueryKey(),
+          });
+        },
       },
-    },
-  });
+    );
+  };
 
   return {
-    ...baseMutation,
-    mutate: (variables: {
-      data: Parameters<typeof postPostsApiBody.parse>[0];
-    }) => {
-      try {
-        // リクエストデータのバリデーション
-        const validatedData = postPostsApiBody.parse(variables.data);
-
-        // バリデーション済みデータでmutateを実行
-        return baseMutation.mutate({ data: validatedData as CreatePost });
-      } catch (error) {
-        throw new ZodValidationError(
-          "データのバリデーションに失敗しました",
-          error,
-        );
-      }
-    },
-    mutateAsync: async (variables: {
-      data: Parameters<typeof postPostsApiBody.parse>[0];
-    }) => {
-      try {
-        // リクエストデータのバリデーション
-        const validatedData = postPostsApiBody.parse(variables.data);
-
-        // バリデーション済みデータでmutateAsyncを実行
-        const response = await baseMutation.mutateAsync({
-          data: validatedData as CreatePost,
-        });
-
-        return response;
-      } catch (error) {
-        throw new ZodValidationError(
-          "データのバリデーションに失敗しました",
-          error,
-        );
-      }
-    },
+    createPost,
+    ...mutation,
   };
 };
 
 /**
- * 投稿を更新するフック（自動生成Zodバリデーション付き）
+ * 投稿を更新するフック
+ *
+ * 自動生成されたZodスキーマでバリデーション
  */
 export const useUpdatePostWithGeneratedValidation = () => {
   const queryClient = useQueryClient();
-  const baseMutation = usePutPostsByIdApi({
-    mutation: {
-      onSuccess: (_data, variables) => {
-        queryClient.invalidateQueries({
-          queryKey: getGetPostsApiQueryKey(),
-        });
-        if (variables.id) {
-          queryClient.invalidateQueries({
-            queryKey: getGetPostsByIdApiQueryKey(variables.id),
-          });
-        }
+  const mutation = usePutPostsByIdApi();
+
+  const updatePost = async ({ id, data }: { id: string; data: UpdatePost }) => {
+    // バリデーション実行
+    const validatedData = putPostsByIdApiBody.parse(data);
+
+    return mutation.mutateAsync(
+      {
+        id,
+        data: validatedData as UpdatePost,
       },
-    },
-  });
+      {
+        onSuccess: () => {
+          queryClient.invalidateQueries({
+            queryKey: getGetPostsApiQueryKey(),
+          });
+          queryClient.invalidateQueries({
+            queryKey: getGetPostsByIdApiQueryKey(id),
+          });
+        },
+      },
+    );
+  };
 
   return {
-    ...baseMutation,
-    mutate: (variables: {
-      id: string;
-      data: Parameters<typeof putPostsByIdApiBody.parse>[0];
-    }) => {
-      try {
-        // リクエストデータのバリデーション
-        const validatedData = putPostsByIdApiBody.parse(variables.data);
-
-        // バリデーション済みデータでmutateを実行
-        return baseMutation.mutate({
-          id: variables.id,
-          data: validatedData as UpdatePost,
-        });
-      } catch (error) {
-        throw new ZodValidationError(
-          "データのバリデーションに失敗しました",
-          error,
-        );
-      }
-    },
-    mutateAsync: async (variables: {
-      id: string;
-      data: Parameters<typeof putPostsByIdApiBody.parse>[0];
-    }) => {
-      try {
-        // リクエストデータのバリデーション
-        const validatedData = putPostsByIdApiBody.parse(variables.data);
-
-        // バリデーション済みデータでmutateAsyncを実行
-        const response = await baseMutation.mutateAsync({
-          id: variables.id,
-          data: validatedData as UpdatePost,
-        });
-
-        return response;
-      } catch (error) {
-        throw new ZodValidationError(
-          "データのバリデーションに失敗しました",
-          error,
-        );
-      }
-    },
+    updatePost,
+    ...mutation,
   };
 };
 
 /**
- * 投稿を削除するフック（自動生成Zodバリデーション付き）
+ * 投稿を削除するフック
  */
 export const useDeletePostWithGeneratedValidation = () => {
   const queryClient = useQueryClient();
+  const mutation = useDeletePostsByIdApi();
 
-  return useDeletePostsByIdApi({
-    mutation: {
-      onSuccess: () => {
-        queryClient.invalidateQueries({
-          queryKey: getGetPostsApiQueryKey(),
-        });
+  const deletePost = async (id: string) => {
+    return mutation.mutateAsync(
+      { id },
+      {
+        onSuccess: () => {
+          queryClient.invalidateQueries({
+            queryKey: getGetPostsApiQueryKey(),
+          });
+        },
       },
-    },
-  });
+    );
+  };
+
+  return {
+    deletePost,
+    ...mutation,
+  };
 };
