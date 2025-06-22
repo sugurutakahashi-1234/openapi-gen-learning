@@ -14,7 +14,11 @@ import {
   usePostPostsApi,
   usePutPostsByIdApi,
 } from "../generated/api";
-import type { CreatePost, GetPostsApiParams, UpdatePost } from "../generated/model";
+import type {
+  CreatePost,
+  GetPostsApiParams,
+  UpdatePost,
+} from "../generated/model";
 import {
   getPostsApiResponse,
   getPostsByIdApiResponse,
@@ -98,13 +102,15 @@ export const useCreatePostWithGeneratedValidation = () => {
 
   return {
     ...baseMutation,
-    mutate: (variables: { data: Parameters<typeof postPostsApiBody.parse>[0] }) => {
+    mutate: (variables: {
+      data: Parameters<typeof postPostsApiBody.parse>[0];
+    }) => {
       try {
         // リクエストデータのバリデーション
         const validatedData = postPostsApiBody.parse(variables.data);
-        
+
         // バリデーション済みデータでmutateを実行
-        return baseMutation.mutate({ data: validatedData });
+        return baseMutation.mutate({ data: validatedData as CreatePost });
       } catch (error) {
         throw new ZodValidationError(
           "データのバリデーションに失敗しました",
@@ -121,7 +127,7 @@ export const useCreatePostWithGeneratedValidation = () => {
 
         // バリデーション済みデータでmutateAsyncを実行
         const response = await baseMutation.mutateAsync({
-          data: validatedData,
+          data: validatedData as CreatePost,
         });
 
         return response;
