@@ -81,7 +81,7 @@ const CreatePost = z
     content: z.string().min(1),
     published: z.boolean().optional().default(false),
     userId: z.string(),
-    tagIds: z.array(z.string()).max(10).optional(),
+    tagIds: z.array(z.string()).optional(),
   })
   .strict()
   .passthrough();
@@ -90,7 +90,7 @@ const UpdatePost = z
     title: z.string().min(1).max(200),
     content: z.string().min(1),
     published: z.boolean(),
-    tagIds: z.array(z.string()).max(10),
+    tagIds: z.array(z.string()),
   })
   .partial()
   .strict()

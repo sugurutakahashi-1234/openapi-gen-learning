@@ -90,7 +90,7 @@ const {query: queryOptions, axios: axiosOptions} = options ?? {};
 
   
 
-    const queryFn: QueryFunction<Awaited<ReturnType<typeof getUsersApi>>> = ({ signal }) => getUsersApi({ ...(signal ? { signal } : {}), ...axiosOptions });
+    const queryFn: QueryFunction<Awaited<ReturnType<typeof getUsersApi>>> = ({ signal }) => getUsersApi({ signal, ...axiosOptions });
 
       
 
@@ -240,7 +240,7 @@ const {query: queryOptions, axios: axiosOptions} = options ?? {};
 
   
 
-    const queryFn: QueryFunction<Awaited<ReturnType<typeof getUsersByIdApi>>> = ({ signal }) => getUsersByIdApi(id, { ...(signal ? { signal } : {}), ...axiosOptions });
+    const queryFn: QueryFunction<Awaited<ReturnType<typeof getUsersByIdApi>>> = ({ signal }) => getUsersByIdApi(id, { signal, ...axiosOptions });
 
       
 
@@ -391,7 +391,7 @@ const {query: queryOptions, axios: axiosOptions} = options ?? {};
 
   
 
-    const queryFn: QueryFunction<Awaited<ReturnType<typeof getPostsApi>>> = ({ signal }) => getPostsApi(params, { ...(signal ? { signal } : {}), ...axiosOptions });
+    const queryFn: QueryFunction<Awaited<ReturnType<typeof getPostsApi>>> = ({ signal }) => getPostsApi(params, { signal, ...axiosOptions });
 
       
 
@@ -541,7 +541,7 @@ const {query: queryOptions, axios: axiosOptions} = options ?? {};
 
   
 
-    const queryFn: QueryFunction<Awaited<ReturnType<typeof getPostsByIdApi>>> = ({ signal }) => getPostsByIdApi(id, { ...(signal ? { signal } : {}), ...axiosOptions });
+    const queryFn: QueryFunction<Awaited<ReturnType<typeof getPostsByIdApi>>> = ({ signal }) => getPostsByIdApi(id, { signal, ...axiosOptions });
 
       
 
@@ -754,7 +754,7 @@ const {query: queryOptions, axios: axiosOptions} = options ?? {};
 
   
 
-    const queryFn: QueryFunction<Awaited<ReturnType<typeof getTagsApi>>> = ({ signal }) => getTagsApi({ ...(signal ? { signal } : {}), ...axiosOptions });
+    const queryFn: QueryFunction<Awaited<ReturnType<typeof getTagsApi>>> = ({ signal }) => getTagsApi({ signal, ...axiosOptions });
 
       
 
@@ -904,7 +904,7 @@ const {query: queryOptions, axios: axiosOptions} = options ?? {};
 
   
 
-    const queryFn: QueryFunction<Awaited<ReturnType<typeof getTagsByIdApi>>> = ({ signal }) => getTagsByIdApi(id, { ...(signal ? { signal } : {}), ...axiosOptions });
+    const queryFn: QueryFunction<Awaited<ReturnType<typeof getTagsByIdApi>>> = ({ signal }) => getTagsByIdApi(id, { signal, ...axiosOptions });
 
       
 
@@ -1055,7 +1055,7 @@ const {query: queryOptions, axios: axiosOptions} = options ?? {};
 
   
 
-    const queryFn: QueryFunction<Awaited<ReturnType<typeof getCommentsApi>>> = ({ signal }) => getCommentsApi(params, { ...(signal ? { signal } : {}), ...axiosOptions });
+    const queryFn: QueryFunction<Awaited<ReturnType<typeof getCommentsApi>>> = ({ signal }) => getCommentsApi(params, { signal, ...axiosOptions });
 
       
 
@@ -1205,7 +1205,7 @@ const {query: queryOptions, axios: axiosOptions} = options ?? {};
 
   
 
-    const queryFn: QueryFunction<Awaited<ReturnType<typeof getCommentsByIdApi>>> = ({ signal }) => getCommentsByIdApi(id, { ...(signal ? { signal } : {}), ...axiosOptions });
+    const queryFn: QueryFunction<Awaited<ReturnType<typeof getCommentsByIdApi>>> = ({ signal }) => getCommentsByIdApi(id, { signal, ...axiosOptions });
 
       
 

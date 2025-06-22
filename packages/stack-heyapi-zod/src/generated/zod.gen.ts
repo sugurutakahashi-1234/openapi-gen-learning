@@ -100,7 +100,7 @@ export const zCreatePost = z.object({
     content: z.string().min(1),
     published: z.boolean().optional().default(false),
     userId: z.string(),
-    tagIds: z.array(z.string()).min(0).max(10).optional()
+    tagIds: z.array(z.string()).optional()
 });
 
 /**
@@ -110,7 +110,7 @@ export const zUpdatePost = z.object({
     title: z.string().min(1).max(200).optional(),
     content: z.string().min(1).optional(),
     published: z.boolean().optional(),
-    tagIds: z.array(z.string()).min(0).max(10).optional()
+    tagIds: z.array(z.string()).optional()
 });
 
 /**
