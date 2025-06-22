@@ -41,7 +41,8 @@
       "Bash(find:*)",
       "Bash(for dir in packages/*/)",
       "Bash(do echo -n \"$(basename \"$dir\"): \")",
-      "Bash(done)"
+      "Bash(done)",
+      "mcp__ide__getDiagnostics"
     ],
     "deny": []
   }
