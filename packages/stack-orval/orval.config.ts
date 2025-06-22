@@ -11,8 +11,5 @@ export default defineConfig({
       schemas: "./src/generated/model",
       client: "react-query",
     },
-    hooks: {
-      afterAllFilesWrite: "npx @biomejs/biome format --write",
-    },
   },
 });
