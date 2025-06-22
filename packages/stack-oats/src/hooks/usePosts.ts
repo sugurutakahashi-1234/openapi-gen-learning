@@ -1,6 +1,6 @@
 /**
  * Posts関連のReact Query Hooks
- * 
+ *
  * openapi-react-queryを使用し、Zodバリデーションを組み込んだ実装
  * 型安全性とランタイム安全性の両方を提供
  */
@@ -27,7 +27,7 @@ export const usePost = (id: string) => {
 
 /**
  * 投稿を作成するフック
- * 
+ *
  * パターン1の実装: フック内でバリデーション（推奨）
  * - 型安全性: 引数の型が保証される（IDE補完も効く）
  * - ランタイム安全性: Zodによる実行時検証も実施
@@ -64,7 +64,7 @@ export const useCreatePost = () => {
 
 /**
  * 投稿を更新するフック
- * 
+ *
  * Zodバリデーションを組み込んだ実装
  */
 export const useUpdatePost = () => {
