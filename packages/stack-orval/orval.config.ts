@@ -12,4 +12,15 @@ export default defineConfig({
       client: "react-query",
     },
   },
+  postsZod: {
+    input: {
+      target: "../../openapi.yaml",
+    },
+    output: {
+      mode: "split",
+      target: "./src/generated/zod.ts",
+      schemas: "./src/generated/zod",
+      client: "zod",
+    },
+  },
 });
