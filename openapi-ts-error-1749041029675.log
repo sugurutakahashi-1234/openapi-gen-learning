@@ -1,8 +1,0 @@
-🚫 client needs to be set to generate services - which HTTP client do you want to use?
-Error: 🚫 client needs to be set to generate services - which HTTP client do you want to use?
-    at qc (/Users/sugurutakahashi/git/openapi-gen-learning/node_modules/@hey-api/openapi-ts/dist/index.cjs:27:62746)
-    at Ys (/Users/sugurutakahashi/git/openapi-gen-learning/node_modules/@hey-api/openapi-ts/dist/index.cjs:27:63037)
-    at Ti (/Users/sugurutakahashi/git/openapi-gen-learning/node_modules/@hey-api/openapi-ts/dist/index.cjs:27:98560)
-    at async /Users/sugurutakahashi/git/openapi-gen-learning/node_modules/@hey-api/openapi-ts/dist/index.cjs:1327:8690
-    at async Xm (/Users/sugurutakahashi/git/openapi-gen-learning/node_modules/@hey-api/openapi-ts/dist/index.cjs:1327:8932)
-    at async start (/Users/sugurutakahashi/git/openapi-gen-learning/node_modules/@hey-api/openapi-ts/bin/index.cjs:78:5)

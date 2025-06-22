@@ -1,0 +1,30 @@
+{
+  "name": "@openapi-gen-learning/stack-oats",
+  "version": "1.0.0",
+  "type": "module",
+  "scripts": {
+    "dev": "vite",
+    "build": "tsc && vite build",
+    "typecheck": "tsc --noEmit",
+    "generate": "pnpm run generate:types && pnpm run generate:zod",
+    "generate:types": "openapi-typescript ../../openapi.yaml -o src/generated/schema.ts",
+    "generate:zod": "openapi-zod-client ../../openapi.yaml -o src/generated/zod.ts"
+  },
+  "dependencies": {
+    "@tanstack/react-query": "^5.81.2",
+    "openapi-fetch": "^0.14.0",
+    "openapi-react-query": "^0.5.0",
+    "react": "^19.1.0",
+    "react-dom": "^19.1.0",
+    "zod": "^3.25.67"
+  },
+  "devDependencies": {
+    "@types/react": "^19.1.8",
+    "@types/react-dom": "^19.1.6",
+    "@vitejs/plugin-react": "^4.5.2",
+    "openapi-typescript": "^7.8.0",
+    "openapi-zod-client": "^1.18.3",
+    "typescript": "^5.8.3",
+    "vite": "^6.3.5"
+  }
+}

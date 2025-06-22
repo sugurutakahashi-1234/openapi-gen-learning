@@ -1,0 +1,24 @@
+{
+  "recommendations": [
+    // Linter & Formatter
+    "biomejs.biome",
+
+    // CSS
+    "bradlc.vscode-tailwindcss",
+
+    // React
+    "dsznajder.es7-react-js-snippets",
+
+    // Prisma
+    "prisma.prisma",
+
+    // Productivity
+    "usernamehw.errorlens",
+    "christian-kohler.path-intellisense",
+    "naumovs.color-highlight",
+
+    // Markdown
+    "yzhang.markdown-all-in-one",
+    "bierner.markdown-mermaid"
+  ]
+}

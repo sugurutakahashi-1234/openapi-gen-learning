@@ -1,1 +1,76 @@
-node_modules
+# Dependencies
+node_modules/
+.pnp/
+.pnp.js
+
+# Build outputs
+dist/
+build/
+.wrangler/
+.cloudflare/
+.output/
+.workers/
+worker/
+.dev.vars
+
+# TypeScript
+*.tsbuildinfo
+.tsc-output/
+
+# Logs
+logs
+*.log
+npm-debug.log*
+yarn-debug.log*
+yarn-error.log*
+pnpm-debug.log*
+lerna-debug.log*
+
+# Environment variables
+# - .env is the active environment file (decrypted from dotenvx files)
+# - .env.keys contains encryption keys (NEVER commit this)
+.env
+.env.keys
+
+# Environment-specific files (Git managed in dotenvx/ folder)
+# - dotenvx/.env.local: Encrypted local development settings
+# - dotenvx/.env.test/.env.dev/.env.stg/.env.prod: Encrypted environment configs
+# All dotenvx/*.env.* files are encrypted and safe to commit
+
+# Editor directories and files
+.vscode/*
+!.vscode/extensions.json
+!.vscode/settings.json
+.idea/
+.DS_Store
+*.suo
+*.ntvs*
+*.njsproj
+*.sln
+*.sw?
+
+# Testing
+coverage/
+test-results/
+playwright-report/
+__diff_output__/
+
+# Vite
+.vite/
+
+# Cache
+.eslintcache
+.stylelintcache
+.cache/
+
+# Temp files
+/tmp/
+/temp/
+**/.claude/tmp/*
+!**/.claude/tmp/.gitkeep
+
+# Misc
+.turbo
+
+# Storybook
+*storybook.log

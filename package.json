@@ -4,38 +4,22 @@
   "description": "Comparison of TypeScript OpenAPI SDK generators",
   "type": "module",
   "scripts": {
-    "generate:zod": "openapi-zod-client ./openapi.yaml -o ./generators/zod-client/index.ts",
-    "generate:hey-api": "npx @hey-api/openapi-ts -i ./openapi.yaml -o ./generators/hey-api -c @hey-api/client-fetch",
-    "generate:hey-api-zod": "npx @hey-api/openapi-ts -f hey-api-zod.config.js",
-    "generate:openapi-ts": "openapi-typescript ./openapi.yaml -o ./generators/openapi-typescript/schema.ts",
-    "generate:all": "npm run generate:zod && npm run generate:hey-api && npm run generate:hey-api-zod && npm run generate:openapi-ts",
-    "dev": "vite",
-    "dev:server": "tsx server/index.ts",
-    "build": "tsc && vite build",
-    "typecheck": "tsc --noEmit",
-    "lint": "eslint . --ext ts,tsx --report-unused-disable-directives --max-warnings 0",
-    "fetch-spec": "curl http://localhost:3001/openapi.json > openapi.yaml && npx js-yaml openapi.yaml > openapi.json && mv openapi.json openapi.yaml"
+    "dev:heyapi": "pnpm --filter @openapi-gen-learning/stack-heyapi dev",
+    "dev:oats": "pnpm --filter @openapi-gen-learning/stack-oats dev",
+    "dev:orval": "pnpm --filter @openapi-gen-learning/stack-orval dev",
+    "generate:all": "pnpm run generate:heyapi && pnpm run generate:oats && pnpm run generate:orval",
+    "generate:heyapi": "pnpm --filter @openapi-gen-learning/stack-heyapi generate",
+    "generate:oats": "pnpm --filter @openapi-gen-learning/stack-oats generate",
+    "generate:orval": "pnpm --filter @openapi-gen-learning/stack-orval generate",
+    "mock": "prism mock ./openapi.yaml -h 0.0.0.0 -p 4010",
+    "build:all": "pnpm --filter './packages/*' build",
+    "typecheck": "pnpm --filter './packages/*' typecheck"
   },
   "devDependencies": {
-    "@hey-api/openapi-ts": "^0.69.2",
-    "@types/node": "^22.15.29",
-    "@typescript-eslint/eslint-plugin": "^8.33.1",
-    "@typescript-eslint/parser": "^8.33.1",
-    "eslint": "^9.28.0",
-    "openapi-typescript": "^7.4.2",
-    "openapi-zod-client": "^1.18.3",
-    "typescript": "^5.6.0",
-    "vite": "^6.3.5",
-    "tsx": "^4.19.2",
-    "js-yaml": "^4.1.0"
-  },
-  "dependencies": {
-    "@hey-api/client-fetch": "^0.11.0",
-    "openapi-fetch": "^0.14.0",
-    "zod": "^3.23.8",
-    "@zodios/core": "^10.9.6",
-    "hono": "^4.6.17",
-    "@hono/zod-openapi": "^0.16.0",
-    "@hono/node-server": "^1.13.7"
+    "@biomejs/biome": "^2.0.4",
+    "@stoplight/prism-cli": "^5.14.2",
+    "@types/node": "^24.0.3",
+    "tsx": "^4.20.3",
+    "typescript": "^5.8.3"
   }
 }
