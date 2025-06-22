@@ -25,7 +25,10 @@
       "Bash(npx tsc:*)",
       "Bash(npx biome check:*)",
       "Bash(npx biome format:*)",
-      "Bash(npm install:*)"
+      "Bash(npm install:*)",
+      "Bash(cp:*)",
+      "Bash(pnpm run:*)",
+      "Bash(pnpm add:*)"
     ],
     "deny": []
   }

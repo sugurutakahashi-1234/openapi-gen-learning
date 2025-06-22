@@ -24,9 +24,9 @@ function App() {
   const handleSubmit = (e: React.FormEvent) => {
     e.preventDefault();
     if (selectedPostId) {
-      updatePost.updatePost({
-        id: selectedPostId,
-        data: formData,
+      updatePost.mutate({
+        params: { path: { id: selectedPostId } },
+        body: formData,
       });
     } else {
       createPost.mutate({ body: formData });
@@ -55,7 +55,9 @@ function App() {
 
   return (
     <div className="container">
-      <h1>OATS Stack - Post Management</h1>
+      <h1 style={{ backgroundColor: "#27ae60", color: "white", padding: "1rem", borderRadius: "8px" }}>
+        🌾 Stack OATS (openapi-typescript + openapi-react-query)
+      </h1>
 
       <form onSubmit={handleSubmit} className="form">
         <input
@@ -122,7 +124,9 @@ function App() {
               </button>
               <button
                 type="button"
-                onClick={() => deletePost.deletePost(post.id)}
+                onClick={() =>
+                  deletePost.mutate({ params: { path: { id: post.id } } })
+                }
               >
                 Delete
               </button>

@@ -59,7 +59,9 @@ function App() {
 
   return (
     <div className="container">
-      <h1>Orval Stack - Post Management</h1>
+      <h1 style={{ backgroundColor: "#9b59b6", color: "white", padding: "1rem", borderRadius: "8px" }}>
+        ⚔️ Stack Orval (orval)
+      </h1>
 
       <form onSubmit={handleSubmit} className="form">
         <input

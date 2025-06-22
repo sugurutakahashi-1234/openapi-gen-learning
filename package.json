@@ -1,8 +1,13 @@
 {
   "name": "openapi-gen-learning",
-  "version": "1.0.0",
-  "description": "Comparison of TypeScript OpenAPI SDK generators",
+  "private": true,
+  "version": "0.0.0",
   "type": "module",
+  "packageManager": "pnpm@10.12.1",
+  "engines": {
+    "node": ">=24",
+    "pnpm": ">=10.12"
+  },
   "scripts": {
     "dev:heyapi": "pnpm --filter @openapi-gen-learning/stack-heyapi dev",
     "dev:oats": "pnpm --filter @openapi-gen-learning/stack-oats dev",
@@ -12,6 +17,11 @@
     "generate:oats": "pnpm --filter @openapi-gen-learning/stack-oats generate",
     "generate:orval": "pnpm --filter @openapi-gen-learning/stack-orval generate",
     "mock": "prism mock ./openapi.yaml -h 0.0.0.0 -p 4010",
+    "dev:all": "pnpm run open:delayed & concurrently -n \"mock,heyapi,oats,orval\" -c \"yellow,blue,green,magenta\" \"pnpm run mock\" \"pnpm run dev:heyapi\" \"pnpm run dev:oats\" \"pnpm run dev:orval\"",
+    "open:delayed": "sleep 1 && pnpm run open:all",
+    "open:all": "open http://localhost:5173 && open http://localhost:5174 && open http://localhost:5175",
+    "dev:clean": "pnpm run kill:ports && pnpm run dev:all",
+    "kill:ports": "lsof -ti:4010,5173,5174,5175 | xargs kill -9 2>/dev/null || true",
     "build:all": "pnpm --filter './packages/*' build",
     "typecheck": "pnpm --filter './packages/*' typecheck",
     "lint": "biome check .",
@@ -22,6 +32,7 @@
     "@biomejs/biome": "^2.0.4",
     "@stoplight/prism-cli": "^5.14.2",
     "@types/node": "^24.0.3",
+    "concurrently": "^9.2.0",
     "tsx": "^4.20.3",
     "typescript": "^5.8.3"
   }

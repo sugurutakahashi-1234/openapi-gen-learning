@@ -1,35 +1,18 @@
-import { useMutation, useQuery, useQueryClient } from "@tanstack/react-query";
 import { useState } from "react";
-import {
-  deletePostsByIdApiMutation,
-  getPostsApiOptions,
-  postPostsApiMutation,
-  putPostsByIdApiMutation,
-} from "./generated/@tanstack/react-query.gen";
 import type { Post } from "./generated/types.gen";
+import {
+  useCreatePost,
+  useDeletePost,
+  usePosts,
+  useUpdatePost,
+} from "./hooks/usePosts";
 
 function App() {
   const [selectedPostId, setSelectedPostId] = useState<string | null>(null);
-  const queryClient = useQueryClient();
-  const { data: posts, isLoading, error } = useQuery(getPostsApiOptions());
-  const createPost = useMutation({
-    ...postPostsApiMutation(),
-    onSuccess: () => {
-      queryClient.invalidateQueries({ queryKey: ["getPostsApi"] });
-    },
-  });
-  const updatePost = useMutation({
-    ...putPostsByIdApiMutation(),
-    onSuccess: () => {
-      queryClient.invalidateQueries({ queryKey: ["getPostsApi"] });
-    },
-  });
-  const deletePost = useMutation({
-    ...deletePostsByIdApiMutation(),
-    onSuccess: () => {
-      queryClient.invalidateQueries({ queryKey: ["getPostsApi"] });
-    },
-  });
+  const { data: posts, isLoading, error } = usePosts();
+  const createPost = useCreatePost();
+  const updatePost = useUpdatePost();
+  const deletePost = useDeletePost();
 
   const [formData, setFormData] = useState({
     title: "",
@@ -38,15 +21,15 @@ function App() {
     published: false,
   });
 
-  const handleSubmit = (e: React.FormEvent) => {
+  const handleSubmit = async (e: React.FormEvent) => {
     e.preventDefault();
     if (selectedPostId) {
-      updatePost.mutate({
+      await updatePost.mutateAsync({
         path: { id: selectedPostId },
         body: formData,
       });
     } else {
-      createPost.mutate({
+      await createPost.mutateAsync({
         body: formData,
       });
     }
@@ -74,7 +57,9 @@ function App() {
 
   return (
     <div className="container">
-      <h1>Hey API Stack - Post Management</h1>
+      <h1 style={{ backgroundColor: "#3498db", color: "white", padding: "1rem", borderRadius: "8px" }}>
+        🚀 Stack HeyAPI (@hey-api/openapi-ts)
+      </h1>
 
       <form onSubmit={handleSubmit} className="form">
         <input

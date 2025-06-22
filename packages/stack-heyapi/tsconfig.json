@@ -6,9 +6,7 @@
     "jsx": "react-jsx",
 
     "isolatedDeclarations": false,
-    "skipLibCheck": true,
-    "exactOptionalPropertyTypes": false,
-    "noUncheckedIndexedAccess": false
+    "exactOptionalPropertyTypes": false
   },
   "include": ["src"],
   "exclude": ["node_modules", "dist"]
