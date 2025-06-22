@@ -21,7 +21,10 @@
       "Bash(npm run build:*)",
       "Bash(npm run generate:*)",
       "Bash(grep:*)",
-      "Bash(play:*)"
+      "Bash(play:*)",
+      "Bash(npx tsc:*)",
+      "Bash(npx biome check:*)",
+      "Bash(npx biome format:*)"
     ],
     "deny": []
   }

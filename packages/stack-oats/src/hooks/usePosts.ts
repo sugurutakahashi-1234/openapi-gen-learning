@@ -1,5 +1,6 @@
 import { useMutation, useQuery, useQueryClient } from "@tanstack/react-query";
 import { client } from "../api";
+import type { components } from "../generated/schema";
 
 export function usePosts() {
   return useQuery({
@@ -29,7 +30,7 @@ export function useCreatePost() {
   const queryClient = useQueryClient();
 
   return useMutation({
-    mutationFn: async (data: any) => {
+    mutationFn: async (data: components["schemas"]["CreatePost"]) => {
       const response = await client.POST("/api/posts", {
         body: data,
       });
@@ -46,7 +47,13 @@ export function useUpdatePost() {
   const queryClient = useQueryClient();
 
   return useMutation({
-    mutationFn: async ({ id, data }: { id: string; data: any }) => {
+    mutationFn: async ({
+      id,
+      data,
+    }: {
+      id: string;
+      data: components["schemas"]["UpdatePost"];
+    }) => {
       const response = await client.PUT("/api/posts/{id}", {
         params: { path: { id } },
         body: data,
