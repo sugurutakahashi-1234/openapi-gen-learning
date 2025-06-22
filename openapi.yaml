@@ -268,8 +268,6 @@ components:
           items:
             type: string
             format: cuid
-          minItems: 0
-          maxItems: 10
           description: "タグIDの配列（省略時: タグなし）"
           example:
             - clhtag123456789abc
@@ -302,8 +300,6 @@ components:
           items:
             type: string
             format: cuid
-          minItems: 0
-          maxItems: 10
           description: "タグIDの配列 - 省略時: 変更なし、空配列: すべて削除、配列指定: 完全置換"
           example:
             - clhtag123456789abc

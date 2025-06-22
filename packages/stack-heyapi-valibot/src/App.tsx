@@ -57,7 +57,14 @@ function App() {
 
   return (
     <div className="container">
-      <h1 style={{ backgroundColor: "#3498db", color: "white", padding: "1rem", borderRadius: "8px" }}>
+      <h1
+        style={{
+          backgroundColor: "#3498db",
+          color: "white",
+          padding: "1rem",
+          borderRadius: "8px",
+        }}
+      >
         🚀 Stack HeyAPI (@hey-api/openapi-ts)
       </h1>
 

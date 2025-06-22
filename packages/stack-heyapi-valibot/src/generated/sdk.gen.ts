@@ -2,7 +2,8 @@
 
 import type { Options as ClientOptions, TDataShape, Client } from './client';
 import type { GetUsersApiData, GetUsersApiResponses, GetUsersApiErrors, PostUsersApiData, PostUsersApiResponses, PostUsersApiErrors, DeleteUsersByIdApiData, DeleteUsersByIdApiResponses, DeleteUsersByIdApiErrors, GetUsersByIdApiData, GetUsersByIdApiResponses, GetUsersByIdApiErrors, GetPostsApiData, GetPostsApiResponses, GetPostsApiErrors, PostPostsApiData, PostPostsApiResponses, PostPostsApiErrors, DeletePostsByIdApiData, DeletePostsByIdApiResponses, DeletePostsByIdApiErrors, GetPostsByIdApiData, GetPostsByIdApiResponses, GetPostsByIdApiErrors, PutPostsByIdApiData, PutPostsByIdApiResponses, PutPostsByIdApiErrors, GetTagsApiData, GetTagsApiResponses, GetTagsApiErrors, PostTagsApiData, PostTagsApiResponses, PostTagsApiErrors, DeleteTagsByIdApiData, DeleteTagsByIdApiResponses, DeleteTagsByIdApiErrors, GetTagsByIdApiData, GetTagsByIdApiResponses, GetTagsByIdApiErrors, GetCommentsApiData, GetCommentsApiResponses, GetCommentsApiErrors, PostCommentsApiData, PostCommentsApiResponses, PostCommentsApiErrors, DeleteCommentsByIdApiData, DeleteCommentsByIdApiResponses, DeleteCommentsByIdApiErrors, GetCommentsByIdApiData, GetCommentsByIdApiResponses, GetCommentsByIdApiErrors, PutCommentsByIdApiData, PutCommentsByIdApiResponses, PutCommentsByIdApiErrors } from './types.gen';
-import { zGetUsersApiResponse, zPostUsersApiResponse, zDeleteUsersByIdApiResponse, zGetUsersByIdApiResponse, zGetPostsApiResponse, zPostPostsApiResponse, zDeletePostsByIdApiResponse, zGetPostsByIdApiResponse, zPutPostsByIdApiResponse, zGetTagsApiResponse, zPostTagsApiResponse, zDeleteTagsByIdApiResponse, zGetTagsByIdApiResponse, zGetCommentsApiResponse, zPostCommentsApiResponse, zDeleteCommentsByIdApiResponse, zGetCommentsByIdApiResponse, zPutCommentsByIdApiResponse } from './zod.gen';
+import { vGetUsersApiResponse, vPostUsersApiResponse, vDeleteUsersByIdApiResponse, vGetUsersByIdApiResponse, vGetPostsApiResponse, vPostPostsApiResponse, vDeletePostsByIdApiResponse, vGetPostsByIdApiResponse, vPutPostsByIdApiResponse, vGetTagsApiResponse, vPostTagsApiResponse, vDeleteTagsByIdApiResponse, vGetTagsByIdApiResponse, vGetCommentsApiResponse, vPostCommentsApiResponse, vDeleteCommentsByIdApiResponse, vGetCommentsByIdApiResponse, vPutCommentsByIdApiResponse } from './valibot.gen';
+import * as v from 'valibot';
 import { client as _heyApiClient } from './client.gen';
 
 export type Options<TData extends TDataShape = TDataShape, ThrowOnError extends boolean = boolean> = ClientOptions<TData, ThrowOnError> & {
@@ -26,7 +27,7 @@ export type Options<TData extends TDataShape = TDataShape, ThrowOnError extends 
 export const getUsersApi = <ThrowOnError extends boolean = true>(options?: Options<GetUsersApiData, ThrowOnError>) => {
     return (options?.client ?? _heyApiClient).get<GetUsersApiResponses, GetUsersApiErrors, ThrowOnError>({
         responseValidator: async (data) => {
-            return await zGetUsersApiResponse.parseAsync(data);
+            return await v.parseAsync(vGetUsersApiResponse, data);
         },
         url: '/api/users',
         ...options
@@ -40,7 +41,7 @@ export const getUsersApi = <ThrowOnError extends boolean = true>(options?: Optio
 export const postUsersApi = <ThrowOnError extends boolean = true>(options: Options<PostUsersApiData, ThrowOnError>) => {
     return (options.client ?? _heyApiClient).post<PostUsersApiResponses, PostUsersApiErrors, ThrowOnError>({
         responseValidator: async (data) => {
-            return await zPostUsersApiResponse.parseAsync(data);
+            return await v.parseAsync(vPostUsersApiResponse, data);
         },
         url: '/api/users',
         ...options,
@@ -58,7 +59,7 @@ export const postUsersApi = <ThrowOnError extends boolean = true>(options: Optio
 export const deleteUsersByIdApi = <ThrowOnError extends boolean = true>(options: Options<DeleteUsersByIdApiData, ThrowOnError>) => {
     return (options.client ?? _heyApiClient).delete<DeleteUsersByIdApiResponses, DeleteUsersByIdApiErrors, ThrowOnError>({
         responseValidator: async (data) => {
-            return await zDeleteUsersByIdApiResponse.parseAsync(data);
+            return await v.parseAsync(vDeleteUsersByIdApiResponse, data);
         },
         url: '/api/users/{id}',
         ...options
@@ -72,7 +73,7 @@ export const deleteUsersByIdApi = <ThrowOnError extends boolean = true>(options:
 export const getUsersByIdApi = <ThrowOnError extends boolean = true>(options: Options<GetUsersByIdApiData, ThrowOnError>) => {
     return (options.client ?? _heyApiClient).get<GetUsersByIdApiResponses, GetUsersByIdApiErrors, ThrowOnError>({
         responseValidator: async (data) => {
-            return await zGetUsersByIdApiResponse.parseAsync(data);
+            return await v.parseAsync(vGetUsersByIdApiResponse, data);
         },
         url: '/api/users/{id}',
         ...options
@@ -86,7 +87,7 @@ export const getUsersByIdApi = <ThrowOnError extends boolean = true>(options: Op
 export const getPostsApi = <ThrowOnError extends boolean = true>(options?: Options<GetPostsApiData, ThrowOnError>) => {
     return (options?.client ?? _heyApiClient).get<GetPostsApiResponses, GetPostsApiErrors, ThrowOnError>({
         responseValidator: async (data) => {
-            return await zGetPostsApiResponse.parseAsync(data);
+            return await v.parseAsync(vGetPostsApiResponse, data);
         },
         url: '/api/posts',
         ...options
@@ -100,7 +101,7 @@ export const getPostsApi = <ThrowOnError extends boolean = true>(options?: Optio
 export const postPostsApi = <ThrowOnError extends boolean = true>(options: Options<PostPostsApiData, ThrowOnError>) => {
     return (options.client ?? _heyApiClient).post<PostPostsApiResponses, PostPostsApiErrors, ThrowOnError>({
         responseValidator: async (data) => {
-            return await zPostPostsApiResponse.parseAsync(data);
+            return await v.parseAsync(vPostPostsApiResponse, data);
         },
         url: '/api/posts',
         ...options,
@@ -118,7 +119,7 @@ export const postPostsApi = <ThrowOnError extends boolean = true>(options: Optio
 export const deletePostsByIdApi = <ThrowOnError extends boolean = true>(options: Options<DeletePostsByIdApiData, ThrowOnError>) => {
     return (options.client ?? _heyApiClient).delete<DeletePostsByIdApiResponses, DeletePostsByIdApiErrors, ThrowOnError>({
         responseValidator: async (data) => {
-            return await zDeletePostsByIdApiResponse.parseAsync(data);
+            return await v.parseAsync(vDeletePostsByIdApiResponse, data);
         },
         url: '/api/posts/{id}',
         ...options
@@ -132,7 +133,7 @@ export const deletePostsByIdApi = <ThrowOnError extends boolean = true>(options:
 export const getPostsByIdApi = <ThrowOnError extends boolean = true>(options: Options<GetPostsByIdApiData, ThrowOnError>) => {
     return (options.client ?? _heyApiClient).get<GetPostsByIdApiResponses, GetPostsByIdApiErrors, ThrowOnError>({
         responseValidator: async (data) => {
-            return await zGetPostsByIdApiResponse.parseAsync(data);
+            return await v.parseAsync(vGetPostsByIdApiResponse, data);
         },
         url: '/api/posts/{id}',
         ...options
@@ -146,7 +147,7 @@ export const getPostsByIdApi = <ThrowOnError extends boolean = true>(options: Op
 export const putPostsByIdApi = <ThrowOnError extends boolean = true>(options: Options<PutPostsByIdApiData, ThrowOnError>) => {
     return (options.client ?? _heyApiClient).put<PutPostsByIdApiResponses, PutPostsByIdApiErrors, ThrowOnError>({
         responseValidator: async (data) => {
-            return await zPutPostsByIdApiResponse.parseAsync(data);
+            return await v.parseAsync(vPutPostsByIdApiResponse, data);
         },
         url: '/api/posts/{id}',
         ...options,
@@ -164,7 +165,7 @@ export const putPostsByIdApi = <ThrowOnError extends boolean = true>(options: Op
 export const getTagsApi = <ThrowOnError extends boolean = true>(options?: Options<GetTagsApiData, ThrowOnError>) => {
     return (options?.client ?? _heyApiClient).get<GetTagsApiResponses, GetTagsApiErrors, ThrowOnError>({
         responseValidator: async (data) => {
-            return await zGetTagsApiResponse.parseAsync(data);
+            return await v.parseAsync(vGetTagsApiResponse, data);
         },
         url: '/api/tags',
         ...options
@@ -178,7 +179,7 @@ export const getTagsApi = <ThrowOnError extends boolean = true>(options?: Option
 export const postTagsApi = <ThrowOnError extends boolean = true>(options: Options<PostTagsApiData, ThrowOnError>) => {
     return (options.client ?? _heyApiClient).post<PostTagsApiResponses, PostTagsApiErrors, ThrowOnError>({
         responseValidator: async (data) => {
-            return await zPostTagsApiResponse.parseAsync(data);
+            return await v.parseAsync(vPostTagsApiResponse, data);
         },
         url: '/api/tags',
         ...options,
@@ -196,7 +197,7 @@ export const postTagsApi = <ThrowOnError extends boolean = true>(options: Option
 export const deleteTagsByIdApi = <ThrowOnError extends boolean = true>(options: Options<DeleteTagsByIdApiData, ThrowOnError>) => {
     return (options.client ?? _heyApiClient).delete<DeleteTagsByIdApiResponses, DeleteTagsByIdApiErrors, ThrowOnError>({
         responseValidator: async (data) => {
-            return await zDeleteTagsByIdApiResponse.parseAsync(data);
+            return await v.parseAsync(vDeleteTagsByIdApiResponse, data);
         },
         url: '/api/tags/{id}',
         ...options
@@ -210,7 +211,7 @@ export const deleteTagsByIdApi = <ThrowOnError extends boolean = true>(options: 
 export const getTagsByIdApi = <ThrowOnError extends boolean = true>(options: Options<GetTagsByIdApiData, ThrowOnError>) => {
     return (options.client ?? _heyApiClient).get<GetTagsByIdApiResponses, GetTagsByIdApiErrors, ThrowOnError>({
         responseValidator: async (data) => {
-            return await zGetTagsByIdApiResponse.parseAsync(data);
+            return await v.parseAsync(vGetTagsByIdApiResponse, data);
         },
         url: '/api/tags/{id}',
         ...options
@@ -224,7 +225,7 @@ export const getTagsByIdApi = <ThrowOnError extends boolean = true>(options: Opt
 export const getCommentsApi = <ThrowOnError extends boolean = true>(options: Options<GetCommentsApiData, ThrowOnError>) => {
     return (options.client ?? _heyApiClient).get<GetCommentsApiResponses, GetCommentsApiErrors, ThrowOnError>({
         responseValidator: async (data) => {
-            return await zGetCommentsApiResponse.parseAsync(data);
+            return await v.parseAsync(vGetCommentsApiResponse, data);
         },
         url: '/api/comments',
         ...options
@@ -238,7 +239,7 @@ export const getCommentsApi = <ThrowOnError extends boolean = true>(options: Opt
 export const postCommentsApi = <ThrowOnError extends boolean = true>(options: Options<PostCommentsApiData, ThrowOnError>) => {
     return (options.client ?? _heyApiClient).post<PostCommentsApiResponses, PostCommentsApiErrors, ThrowOnError>({
         responseValidator: async (data) => {
-            return await zPostCommentsApiResponse.parseAsync(data);
+            return await v.parseAsync(vPostCommentsApiResponse, data);
         },
         url: '/api/comments',
         ...options,
@@ -256,7 +257,7 @@ export const postCommentsApi = <ThrowOnError extends boolean = true>(options: Op
 export const deleteCommentsByIdApi = <ThrowOnError extends boolean = true>(options: Options<DeleteCommentsByIdApiData, ThrowOnError>) => {
     return (options.client ?? _heyApiClient).delete<DeleteCommentsByIdApiResponses, DeleteCommentsByIdApiErrors, ThrowOnError>({
         responseValidator: async (data) => {
-            return await zDeleteCommentsByIdApiResponse.parseAsync(data);
+            return await v.parseAsync(vDeleteCommentsByIdApiResponse, data);
         },
         url: '/api/comments/{id}',
         ...options
@@ -270,7 +271,7 @@ export const deleteCommentsByIdApi = <ThrowOnError extends boolean = true>(optio
 export const getCommentsByIdApi = <ThrowOnError extends boolean = true>(options: Options<GetCommentsByIdApiData, ThrowOnError>) => {
     return (options.client ?? _heyApiClient).get<GetCommentsByIdApiResponses, GetCommentsByIdApiErrors, ThrowOnError>({
         responseValidator: async (data) => {
-            return await zGetCommentsByIdApiResponse.parseAsync(data);
+            return await v.parseAsync(vGetCommentsByIdApiResponse, data);
         },
         url: '/api/comments/{id}',
         ...options
@@ -284,7 +285,7 @@ export const getCommentsByIdApi = <ThrowOnError extends boolean = true>(options:
 export const putCommentsByIdApi = <ThrowOnError extends boolean = true>(options: Options<PutCommentsByIdApiData, ThrowOnError>) => {
     return (options.client ?? _heyApiClient).put<PutCommentsByIdApiResponses, PutCommentsByIdApiErrors, ThrowOnError>({
         responseValidator: async (data) => {
-            return await zPutCommentsByIdApiResponse.parseAsync(data);
+            return await v.parseAsync(vPutCommentsByIdApiResponse, data);
         },
         url: '/api/comments/{id}',
         ...options,

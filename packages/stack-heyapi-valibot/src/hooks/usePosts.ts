@@ -36,7 +36,7 @@ export const usePost = (id: string) => {
  */
 export const useCreatePost = () => {
   const queryClient = useQueryClient();
-  
+
   return useMutation({
     ...postPostsApiMutation(),
     onSuccess: () => {
@@ -52,7 +52,7 @@ export const useCreatePost = () => {
  */
 export const useUpdatePost = () => {
   const queryClient = useQueryClient();
-  
+
   return useMutation({
     ...putPostsByIdApiMutation(),
     onSuccess: (_data, variables) => {
@@ -61,7 +61,8 @@ export const useUpdatePost = () => {
       });
       if (variables.path?.id) {
         queryClient.invalidateQueries({
-          queryKey: getPostsByIdApiOptions({ path: { id: variables.path.id } }).queryKey,
+          queryKey: getPostsByIdApiOptions({ path: { id: variables.path.id } })
+            .queryKey,
         });
       }
     },
@@ -73,7 +74,7 @@ export const useUpdatePost = () => {
  */
 export const useDeletePost = () => {
   const queryClient = useQueryClient();
-  
+
   return useMutation({
     ...deletePostsByIdApiMutation(),
     onSuccess: () => {

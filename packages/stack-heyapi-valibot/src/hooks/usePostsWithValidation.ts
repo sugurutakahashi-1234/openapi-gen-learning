@@ -1,10 +1,11 @@
 /**
- * Posts関連のReact Query Hooks（Zodバリデーション付き）
+ * Posts関連のReact Query Hooks（Valibotバリデーション付き）
  *
- * Hey APIで生成されたReact Query hooksとZodスキーマを利用した実装
+ * Hey APIで生成されたReact Query hooksとValibotスキーマを利用した実装
  * 型安全性とランタイム安全性の両方を提供
  */
 import { useMutation, useQuery, useQueryClient } from "@tanstack/react-query";
+import * as v from "valibot";
 import {
   deletePostsByIdApiMutation,
   getPostsApiOptions,
@@ -13,7 +14,7 @@ import {
   putPostsByIdApiMutation,
 } from "../generated/@tanstack/react-query.gen";
 import type { CreatePost, UpdatePost } from "../generated/types.gen";
-import { zCreatePost, zUpdatePost } from "../generated/zod.gen";
+import { vCreatePost, vUpdatePost } from "../generated/valibot.gen";
 
 /**
  * 投稿一覧を取得するフック
@@ -34,11 +35,11 @@ export const usePost = (id: string) => {
 };
 
 /**
- * 投稿を作成するフック（Zodバリデーション付き）
+ * 投稿を作成するフック（Valibotバリデーション付き）
  *
  * - 型安全性: 引数の型が保証される（IDE補完も効く）
- * - ランタイム安全性: Zodによる実行時検証も実施
- * - 開発体験: TypeScriptとZodの両方の利点を活用
+ * - ランタイム安全性: Valibotによる実行時検証も実施
+ * - 開発体験: TypeScriptとValibotの両方の利点を活用
  */
 export const useCreatePost = () => {
   const queryClient = useQueryClient();
@@ -56,7 +57,7 @@ export const useCreatePost = () => {
   // 型安全な引数を受け取りつつ、ランタイムバリデーションも実行
   const createPost = async (data: CreatePost) => {
     // バリデーション実行（型は既に保証されているが、ランタイムでも検証）
-    const validatedData = zCreatePost.parse(data);
+    const validatedData = v.parse(vCreatePost, data);
 
     return mutation.mutateAsync({
       body: validatedData,
@@ -70,7 +71,7 @@ export const useCreatePost = () => {
 };
 
 /**
- * 投稿を更新するフック（Zodバリデーション付き）
+ * 投稿を更新するフック（Valibotバリデーション付き）
  */
 export const useUpdatePost = () => {
   const queryClient = useQueryClient();
@@ -93,7 +94,7 @@ export const useUpdatePost = () => {
 
   const updatePost = async ({ id, data }: { id: string; data: UpdatePost }) => {
     // バリデーション実行
-    const validatedData = zUpdatePost.parse(data);
+    const validatedData = v.parse(vUpdatePost, data);
 
     return mutation.mutateAsync({
       path: { id },

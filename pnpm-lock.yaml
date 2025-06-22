@@ -27,7 +27,44 @@ importers:
         specifier: ^5.8.3
         version: 5.8.3
 
-  packages/stack-heyapi:
+  packages/stack-heyapi-valibot:
+    dependencies:
+      '@hey-api/client-fetch':
+        specifier: ^0.13.1
+        version: 0.13.1(@hey-api/openapi-ts@0.75.0(typescript@5.8.3))
+      '@tanstack/react-query':
+        specifier: ^5.81.2
+        version: 5.81.2(react@19.1.0)
+      react:
+        specifier: ^19.1.0
+        version: 19.1.0
+      react-dom:
+        specifier: ^19.1.0
+        version: 19.1.0(react@19.1.0)
+      valibot:
+        specifier: ^1.1.0
+        version: 1.1.0(typescript@5.8.3)
+    devDependencies:
+      '@hey-api/openapi-ts':
+        specifier: ^0.75.0
+        version: 0.75.0(typescript@5.8.3)
+      '@types/react':
+        specifier: ^19.1.8
+        version: 19.1.8
+      '@types/react-dom':
+        specifier: ^19.1.6
+        version: 19.1.6(@types/react@19.1.8)
+      '@vitejs/plugin-react':
+        specifier: ^4.5.2
+        version: 4.5.2(vite@6.3.5(@types/node@24.0.3)(jiti@2.4.2)(tsx@4.20.3)(yaml@2.8.0))
+      typescript:
+        specifier: ^5.8.3
+        version: 5.8.3
+      vite:
+        specifier: ^6.3.5
+        version: 6.3.5(@types/node@24.0.3)(jiti@2.4.2)(tsx@4.20.3)(yaml@2.8.0)
+
+  packages/stack-heyapi-zod:
     dependencies:
       '@hey-api/client-fetch':
         specifier: ^0.13.1
@@ -2772,6 +2809,14 @@ packages:
   uuid@8.3.2:
     resolution: {integrity: sha512-+NYs2QeMWy+GWFOEm9xnn6HCDp0l7QBD7ml8zLUmJ+93Q5NF0NocErnwkTkXVFNiX3/fpC6afS8Dhb/gz7R7eg==}
     hasBin: true
+
+  valibot@1.1.0:
+    resolution: {integrity: sha512-Nk8lX30Qhu+9txPYTwM0cFlWLdPFsFr6LblzqIySfbZph9+BFsAHsNvHOymEviUepeIW6KFHzpX8TKhbptBXXw==}
+    peerDependencies:
+      typescript: '>=5'
+    peerDependenciesMeta:
+      typescript:
+        optional: true
 
   validate.io-array@1.0.6:
     resolution: {integrity: sha512-DeOy7CnPEziggrOO5CZhVKJw6S3Yi7e9e65R1Nl/RTN1vTQKnzjfvks0/8kQ40FP/dsjRAOd4hxmJ7uLa6vxkg==}
@@ -5927,6 +5972,10 @@ snapshots:
   utility-types@3.11.0: {}
 
   uuid@8.3.2: {}
+
+  valibot@1.1.0(typescript@5.8.3):
+    optionalDependencies:
+      typescript: 5.8.3
 
   validate.io-array@1.0.6: {}
 

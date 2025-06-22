@@ -29,7 +29,9 @@
       "Bash(cp:*)",
       "Bash(pnpm run:*)",
       "Bash(pnpm add:*)",
-      "Bash(mv:*)"
+      "Bash(mv:*)",
+      "Bash(npm run lint)",
+      "Bash(npm run lint:*)"
     ],
     "deny": []
   }
