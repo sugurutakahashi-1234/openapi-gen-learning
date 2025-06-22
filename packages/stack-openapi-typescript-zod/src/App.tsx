@@ -55,8 +55,8 @@ function App() {
 
   return (
     <div className="container">
-      <h1 style={{ backgroundColor: "#27ae60", color: "white", padding: "1rem", borderRadius: "8px" }}>
-        🌾 Stack OATS (openapi-typescript + openapi-react-query)
+      <h1 style={{ backgroundColor: "#9b59b6", color: "white", padding: "1rem", borderRadius: "8px" }}>
+        ⚡ Stack OpenAPI TypeScript + Zod
       </h1>
 
       <form onSubmit={handleSubmit} className="form">
