@@ -36,7 +36,8 @@
       "Bash(pnpm --filter @openapi-gen-learning/stack-orval run lint:fix)",
       "Bash(pnpm --filter @openapi-gen-learning/stack-orval add zod)",
       "Bash(pnpm --filter @openapi-gen-learning/stack-orval run typecheck)",
-      "Bash(pnpm --filter @openapi-gen-learning/stack-orval run generate)"
+      "Bash(pnpm --filter @openapi-gen-learning/stack-orval run generate)",
+      "Bash(rg:*)"
     ],
     "deny": []
   }

@@ -49,7 +49,7 @@ export const useCreatePostWithGeneratedValidation = () => {
     const validatedData = postPostsApiBody.parse(data);
 
     return mutation.mutateAsync(
-      { data: validatedData as CreatePost },
+      { data: validatedData },
       {
         onSuccess: () => {
           queryClient.invalidateQueries({
@@ -82,7 +82,7 @@ export const useUpdatePostWithGeneratedValidation = () => {
     return mutation.mutateAsync(
       {
         id,
-        data: validatedData as UpdatePost,
+        data: validatedData,
       },
       {
         onSuccess: () => {
