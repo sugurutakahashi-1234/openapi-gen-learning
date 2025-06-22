@@ -1,17 +1,35 @@
 import { useState } from "react";
+import { useQuery, useMutation, useQueryClient } from "@tanstack/react-query";
 import {
-  useCreatePost,
-  useDeletePost,
-  usePosts,
-  useUpdatePost,
-} from "./hooks/usePosts";
+  getPostsApiOptions,
+  postPostsApiMutation,
+  putPostsByIdApiMutation,
+  deletePostsByIdApiMutation,
+} from "./generated/@tanstack/react-query.gen";
+import type { Post } from "./generated/types.gen";
 
 function App() {
   const [selectedPostId, setSelectedPostId] = useState<string | null>(null);
-  const { data: posts, isLoading, error } = usePosts();
-  const createPost = useCreatePost();
-  const updatePost = useUpdatePost();
-  const deletePost = useDeletePost();
+  const queryClient = useQueryClient();
+  const { data: posts, isLoading, error } = useQuery(getPostsApiOptions());
+  const createPost = useMutation({
+    ...postPostsApiMutation(),
+    onSuccess: () => {
+      queryClient.invalidateQueries({ queryKey: ["getPostsApi"] });
+    },
+  });
+  const updatePost = useMutation({
+    ...putPostsByIdApiMutation(),
+    onSuccess: () => {
+      queryClient.invalidateQueries({ queryKey: ["getPostsApi"] });
+    },
+  });
+  const deletePost = useMutation({
+    ...deletePostsByIdApiMutation(),
+    onSuccess: () => {
+      queryClient.invalidateQueries({ queryKey: ["getPostsApi"] });
+    },
+  });
 
   const [formData, setFormData] = useState({
     title: "",
@@ -24,11 +42,13 @@ function App() {
     e.preventDefault();
     if (selectedPostId) {
       updatePost.mutate({
-        id: selectedPostId,
-        data: formData,
+        path: { id: selectedPostId },
+        body: formData,
       });
     } else {
-      createPost.mutate(formData);
+      createPost.mutate({
+        body: formData,
+      });
     }
     setFormData({
       title: "",
@@ -39,7 +59,7 @@ function App() {
     setSelectedPostId(null);
   };
 
-  const handleEdit = (post: any) => {
+  const handleEdit = (post: Post) => {
     setSelectedPostId(post.id);
     setFormData({
       title: post.title,
@@ -105,7 +125,7 @@ function App() {
 
       <div className="posts">
         <h2>Posts</h2>
-        {posts?.data?.map((post: any) => (
+        {posts?.data?.map((post) => (
           <div key={post.id} className="post-card">
             <h3>{post.title}</h3>
             <p>{post.content}</p>
@@ -116,8 +136,8 @@ function App() {
               </span>
             </div>
             <div className="post-actions">
-              <button onClick={() => handleEdit(post)}>Edit</button>
-              <button onClick={() => deletePost.mutate(post.id)}>Delete</button>
+              <button type="button" onClick={() => handleEdit(post)}>Edit</button>
+              <button type="button" onClick={() => deletePost.mutate({ path: { id: post.id } })}>Delete</button>
             </div>
           </div>
         ))}

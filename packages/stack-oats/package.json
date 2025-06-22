@@ -7,8 +7,8 @@
     "build": "tsc && vite build",
     "typecheck": "tsc --noEmit",
     "generate": "pnpm run generate:types && pnpm run generate:zod",
-    "generate:types": "openapi-typescript ../../openapi.yaml -o src/generated/schema.ts",
-    "generate:zod": "openapi-zod-client ../../openapi.yaml -o src/generated/zod.ts"
+    "generate:types": "node scripts/generate-schema.mjs",
+    "generate:zod": "openapi-zod-client ../../openapi.yaml --export-schemas --strict-objects -t ./scripts/schemas-only.hbs -o src/generated/api-zod.ts"
   },
   "dependencies": {
     "@tanstack/react-query": "^5.81.2",
