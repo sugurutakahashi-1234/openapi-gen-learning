@@ -13,7 +13,10 @@
     "generate:orval": "pnpm --filter @openapi-gen-learning/stack-orval generate",
     "mock": "prism mock ./openapi.yaml -h 0.0.0.0 -p 4010",
     "build:all": "pnpm --filter './packages/*' build",
-    "typecheck": "pnpm --filter './packages/*' typecheck"
+    "typecheck": "pnpm --filter './packages/*' typecheck",
+    "lint": "biome check .",
+    "lint:fix": "biome check --write",
+    "lint:fix:unsafe": "biome check --write --unsafe"
   },
   "devDependencies": {
     "@biomejs/biome": "^2.0.4",

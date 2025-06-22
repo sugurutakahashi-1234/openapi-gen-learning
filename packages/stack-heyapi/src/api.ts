@@ -1,5 +1,5 @@
-import { createClient } from './generated'
+import { createClient } from "./generated";
 
 export const client = createClient({
-  baseUrl: 'http://localhost:4010',
-})
+  baseUrl: "http://localhost:4010",
+});

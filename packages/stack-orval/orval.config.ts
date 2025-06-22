@@ -1,24 +1,18 @@
-import { defineConfig } from 'orval'
+import { defineConfig } from "orval";
 
 export default defineConfig({
   posts: {
     input: {
-      target: '../../openapi.yaml',
+      target: "../../openapi.yaml",
     },
     output: {
-      mode: 'split',
-      target: './src/generated/api.ts',
-      schemas: './src/generated/model',
-      client: 'react-query',
-      override: {
-        mutator: {
-          path: './src/api/axiosInstance.ts',
-          name: 'customInstance',
-        },
-      },
+      mode: "split",
+      target: "./src/generated/api.ts",
+      schemas: "./src/generated/model",
+      client: "react-query",
     },
     hooks: {
-      afterAllFilesWrite: 'prettier --write',
+      afterAllFilesWrite: "npx @biomejs/biome format --write",
     },
   },
-})
+});

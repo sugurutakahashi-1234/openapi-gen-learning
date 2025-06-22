@@ -1,16 +1,18 @@
-import axios from 'axios'
+import axios from "axios";
 
-export const customInstance = axios.create({
-  baseURL: 'http://localhost:4010',
+const customInstance = axios.create({
+  baseURL: "http://localhost:4010",
   headers: {
-    'Content-Type': 'application/json',
+    "Content-Type": "application/json",
   },
-})
+});
 
 customInstance.interceptors.response.use(
   (response) => response,
   (error) => {
-    console.error('API Error:', error)
-    return Promise.reject(error)
-  }
-)
+    console.error("API Error:", error);
+    return Promise.reject(error);
+  },
+);
+
+export default customInstance;

@@ -16,7 +16,10 @@
       "WebFetch(domain:heyapi.dev)",
       "Bash(rm:*)",
       "Bash(npm outdated)",
-      "Bash(npm run generate:all:*)"
+      "Bash(npm run generate:all:*)",
+      "Bash(ls:*)",
+      "Bash(npm run build:*)",
+      "Bash(npm run generate:*)"
     ],
     "deny": []
   }

@@ -1,60 +1,66 @@
-import { useState } from 'react'
-import { 
+import { useState } from "react";
+import {
+  useDeletePostsByIdApi,
   useGetPostsApi,
   usePostPostsApi,
   usePutPostsByIdApi,
-  useDeletePostsByIdApi
-} from './generated/api'
+} from "./generated/api";
+import type { Post } from "./generated/model";
 
 function App() {
-  const [selectedPostId, setSelectedPostId] = useState<string | null>(null)
-  const { data: postsResponse, isLoading, error } = useGetPostsApi()
-  const createPost = usePostPostsApi()
-  const updatePost = usePutPostsByIdApi()
-  const deletePost = useDeletePostsByIdApi()
+  const [selectedPostId, setSelectedPostId] = useState<string | null>(null);
+  const { data: postsResponse, isLoading, error } = useGetPostsApi();
+  const createPost = usePostPostsApi();
+  const updatePost = usePutPostsByIdApi();
+  const deletePost = useDeletePostsByIdApi();
 
   const [formData, setFormData] = useState({
-    title: '',
-    content: '',
-    userId: 'clh1234567890abcdef',
-    published: false
-  })
+    title: "",
+    content: "",
+    userId: "clh1234567890abcdef",
+    published: false,
+  });
 
   const handleSubmit = (e: React.FormEvent) => {
-    e.preventDefault()
+    e.preventDefault();
     if (selectedPostId) {
       updatePost.mutate({
         id: selectedPostId,
-        data: formData
-      })
+        data: formData,
+      });
     } else {
       createPost.mutate({
-        data: formData
-      })
+        data: formData,
+      });
     }
-    setFormData({ title: '', content: '', userId: 'clh1234567890abcdef', published: false })
-    setSelectedPostId(null)
-  }
+    setFormData({
+      title: "",
+      content: "",
+      userId: "clh1234567890abcdef",
+      published: false,
+    });
+    setSelectedPostId(null);
+  };
 
-  const handleEdit = (post: any) => {
-    setSelectedPostId(post.id)
+  const handleEdit = (post: Post) => {
+    setSelectedPostId(post.id);
     setFormData({
       title: post.title,
       content: post.content,
       userId: post.userId,
-      published: post.published
-    })
-  }
+      published: post.published,
+    });
+  };
 
-  if (isLoading) return <div>Loading...</div>
-  if (error) return <div>Error: {error.message}</div>
+  if (isLoading) return <div>Loading...</div>;
+  if (error) return <div>Error: {error.message}</div>;
 
-  const posts = postsResponse?.data
+  const posts = postsResponse?.data?.data;
 
   return (
     <div className="container">
       <h1>Orval Stack - Post Management</h1>
-      
+
       <form onSubmit={handleSubmit} className="form">
         <input
           type="text"
@@ -66,25 +72,37 @@ function App() {
         <textarea
           placeholder="Content"
           value={formData.content}
-          onChange={(e) => setFormData({ ...formData, content: e.target.value })}
+          onChange={(e) =>
+            setFormData({ ...formData, content: e.target.value })
+          }
           required
         />
         <label>
           <input
             type="checkbox"
             checked={formData.published}
-            onChange={(e) => setFormData({ ...formData, published: e.target.checked })}
+            onChange={(e) =>
+              setFormData({ ...formData, published: e.target.checked })
+            }
           />
           Published
         </label>
         <button type="submit">
-          {selectedPostId ? 'Update' : 'Create'} Post
+          {selectedPostId ? "Update" : "Create"} Post
         </button>
         {selectedPostId && (
-          <button type="button" onClick={() => {
-            setSelectedPostId(null)
-            setFormData({ title: '', content: '', userId: 'clh1234567890abcdef', published: false })
-          }}>
+          <button
+            type="button"
+            onClick={() => {
+              setSelectedPostId(null);
+              setFormData({
+                title: "",
+                content: "",
+                userId: "clh1234567890abcdef",
+                published: false,
+              });
+            }}
+          >
             Cancel
           </button>
         )}
@@ -92,23 +110,27 @@ function App() {
 
       <div className="posts">
         <h2>Posts</h2>
-        {posts?.map((post: any) => (
+        {posts?.map((post) => (
           <div key={post.id} className="post-card">
             <h3>{post.title}</h3>
             <p>{post.content}</p>
             <div className="post-meta">
-              <span>Status: {post.published ? 'Published' : 'Draft'}</span>
-              <span>Created: {new Date(post.createdAt).toLocaleDateString()}</span>
+              <span>Status: {post.published ? "Published" : "Draft"}</span>
+              <span>
+                Created: {new Date(post.createdAt).toLocaleDateString()}
+              </span>
             </div>
             <div className="post-actions">
               <button onClick={() => handleEdit(post)}>Edit</button>
-              <button onClick={() => deletePost.mutate({ id: post.id })}>Delete</button>
+              <button onClick={() => deletePost.mutate({ id: post.id })}>
+                Delete
+              </button>
             </div>
           </div>
         ))}
       </div>
     </div>
-  )
+  );
 }
 
-export default App
+export default App;
