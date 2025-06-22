@@ -6,7 +6,10 @@
     "dev": "vite",
     "build": "tsc && vite build",
     "typecheck": "tsc --noEmit",
-    "generate": "orval"
+    "generate": "orval",
+    "lint": "biome check .",
+    "lint:fix": "biome check --write",
+    "lint:fix:unsafe": "biome check --write --unsafe"
   },
   "dependencies": {
     "@tanstack/react-query": "^5.81.2",

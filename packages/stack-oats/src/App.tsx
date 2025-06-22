@@ -1,4 +1,5 @@
 import { useState } from "react";
+import type { components } from "./generated/schema";
 import {
   useCreatePost,
   useDeletePost,
@@ -23,12 +24,12 @@ function App() {
   const handleSubmit = (e: React.FormEvent) => {
     e.preventDefault();
     if (selectedPostId) {
-      updatePost.mutate({
+      updatePost.updatePost({
         id: selectedPostId,
         data: formData,
       });
     } else {
-      createPost.mutate(formData);
+      createPost.mutate({ body: formData });
     }
     setFormData({
       title: "",
@@ -39,7 +40,7 @@ function App() {
     setSelectedPostId(null);
   };
 
-  const handleEdit = (post: any) => {
+  const handleEdit = (post: components["schemas"]["Post"]) => {
     setSelectedPostId(post.id);
     setFormData({
       title: post.title,
@@ -105,7 +106,7 @@ function App() {
 
       <div className="posts">
         <h2>Posts</h2>
-        {posts?.data?.map((post: any) => (
+        {posts?.data?.map((post) => (
           <div key={post.id} className="post-card">
             <h3>{post.title}</h3>
             <p>{post.content}</p>
@@ -116,8 +117,15 @@ function App() {
               </span>
             </div>
             <div className="post-actions">
-              <button onClick={() => handleEdit(post)}>Edit</button>
-              <button onClick={() => deletePost.mutate(post.id)}>Delete</button>
+              <button type="button" onClick={() => handleEdit(post)}>
+                Edit
+              </button>
+              <button
+                type="button"
+                onClick={() => deletePost.deletePost(post.id)}
+              >
+                Delete
+              </button>
             </div>
           </div>
         ))}

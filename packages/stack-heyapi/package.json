@@ -6,7 +6,10 @@
     "dev": "vite",
     "build": "tsc -p tsconfig.build.json && vite build",
     "typecheck": "tsc --noEmit",
-    "generate": "npx @hey-api/openapi-ts"
+    "generate": "npx @hey-api/openapi-ts",
+    "lint": "biome check .",
+    "lint:fix": "biome check --write",
+    "lint:fix:unsafe": "biome check --write --unsafe"
   },
   "dependencies": {
     "@hey-api/client-fetch": "^0.13.1",

@@ -121,8 +121,13 @@ function App() {
               </span>
             </div>
             <div className="post-actions">
-              <button onClick={() => handleEdit(post)}>Edit</button>
-              <button onClick={() => deletePost.mutate({ id: post.id })}>
+              <button type="button" onClick={() => handleEdit(post)}>
+                Edit
+              </button>
+              <button
+                type="button"
+                onClick={() => deletePost.mutate({ id: post.id })}
+              >
                 Delete
               </button>
             </div>

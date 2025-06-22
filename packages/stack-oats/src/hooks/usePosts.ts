@@ -1,85 +1,134 @@
-import { useMutation, useQuery, useQueryClient } from "@tanstack/react-query";
-import { client } from "../api";
+/**
+ * Posts関連のReact Query Hooks
+ * 
+ * openapi-react-queryを使用し、Zodバリデーションを組み込んだ実装
+ * 型安全性とランタイム安全性の両方を提供
+ */
+import { useQueryClient } from "@tanstack/react-query";
+import { $api } from "../api/client";
+import { schemas } from "../api/schemas";
 import type { components } from "../generated/schema";
 
-export function usePosts() {
-  return useQuery({
-    queryKey: ["posts"],
-    queryFn: async () => {
-      const response = await client.GET("/api/posts");
-      if (!response.data) throw new Error("Failed to fetch posts");
-      return response.data;
-    },
-  });
-}
+/**
+ * 投稿一覧を取得するフック
+ */
+export const usePosts = () => {
+  return $api.useQuery("get", "/api/posts");
+};
 
-export function usePost(id: string) {
-  return useQuery({
-    queryKey: ["posts", id],
-    queryFn: async () => {
-      const response = await client.GET("/api/posts/{id}", {
-        params: { path: { id } },
-      });
-      if (!response.data) throw new Error("Failed to fetch post");
-      return response.data;
-    },
+/**
+ * 投稿を個別に取得するフック
+ */
+export const usePost = (id: string) => {
+  return $api.useQuery("get", "/api/posts/{id}", {
+    params: { path: { id } },
   });
-}
+};
 
-export function useCreatePost() {
+/**
+ * 投稿を作成するフック
+ * 
+ * パターン1の実装: フック内でバリデーション（推奨）
+ * - 型安全性: 引数の型が保証される（IDE補完も効く）
+ * - ランタイム安全性: Zodによる実行時検証も実施
+ * - 開発体験: TypeScriptとZodの両方の利点を活用
+ */
+export const useCreatePost = () => {
   const queryClient = useQueryClient();
+  const mutation = $api.useMutation("post", "/api/posts");
 
-  return useMutation({
-    mutationFn: async (data: components["schemas"]["CreatePost"]) => {
-      const response = await client.POST("/api/posts", {
-        body: data,
-      });
-      if (!response.data) throw new Error("Failed to create post");
-      return response.data;
-    },
-    onSuccess: () => {
-      queryClient.invalidateQueries({ queryKey: ["posts"] });
-    },
-  });
-}
+  // 型安全な引数を受け取りつつ、ランタイムバリデーションも実行
+  const createPost = async (data: components["schemas"]["CreatePost"]) => {
+    // バリデーション実行（型は既に保証されているが、ランタイムでも検証）
+    const validatedData = schemas.CreatePost.parse(data);
 
-export function useUpdatePost() {
+    return mutation.mutateAsync(
+      {
+        body: validatedData,
+      },
+      {
+        onSuccess: () => {
+          queryClient.invalidateQueries({
+            queryKey: ["get", "/api/posts"],
+          });
+        },
+      },
+    );
+  };
+
+  return {
+    createPost,
+    ...mutation,
+  };
+};
+
+/**
+ * 投稿を更新するフック
+ * 
+ * Zodバリデーションを組み込んだ実装
+ */
+export const useUpdatePost = () => {
   const queryClient = useQueryClient();
+  const mutation = $api.useMutation("put", "/api/posts/{id}");
 
-  return useMutation({
-    mutationFn: async ({
-      id,
-      data,
-    }: {
-      id: string;
-      data: components["schemas"]["UpdatePost"];
-    }) => {
-      const response = await client.PUT("/api/posts/{id}", {
+  const updatePost = async ({
+    id,
+    data,
+  }: {
+    id: string;
+    data: components["schemas"]["UpdatePost"];
+  }) => {
+    // バリデーション実行
+    const validatedData = schemas.UpdatePost.parse(data);
+
+    return mutation.mutateAsync(
+      {
         params: { path: { id } },
-        body: data,
-      });
-      if (!response.data) throw new Error("Failed to update post");
-      return response.data;
-    },
-    onSuccess: () => {
-      queryClient.invalidateQueries({ queryKey: ["posts"] });
-    },
-  });
-}
+        body: validatedData,
+      },
+      {
+        onSuccess: () => {
+          queryClient.invalidateQueries({
+            queryKey: ["get", "/api/posts"],
+          });
+          queryClient.invalidateQueries({
+            queryKey: ["get", "/api/posts/{id}", { params: { path: { id } } }],
+          });
+        },
+      },
+    );
+  };
 
-export function useDeletePost() {
+  return {
+    updatePost,
+    ...mutation,
+  };
+};
+
+/**
+ * 投稿を削除するフック
+ */
+export const useDeletePost = () => {
   const queryClient = useQueryClient();
+  const mutation = $api.useMutation("delete", "/api/posts/{id}");
 
-  return useMutation({
-    mutationFn: async (id: string) => {
-      const response = await client.DELETE("/api/posts/{id}", {
+  const deletePost = async (id: string) => {
+    return mutation.mutateAsync(
+      {
         params: { path: { id } },
-      });
-      if (response.error) throw new Error("Failed to delete post");
-      return response.data;
-    },
-    onSuccess: () => {
-      queryClient.invalidateQueries({ queryKey: ["posts"] });
-    },
-  });
-}
+      },
+      {
+        onSuccess: () => {
+          queryClient.invalidateQueries({
+            queryKey: ["get", "/api/posts"],
+          });
+        },
+      },
+    );
+  };
+
+  return {
+    deletePost,
+    ...mutation,
+  };
+};

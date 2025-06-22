@@ -1,10 +1,10 @@
+import { useMutation, useQuery, useQueryClient } from "@tanstack/react-query";
 import { useState } from "react";
-import { useQuery, useMutation, useQueryClient } from "@tanstack/react-query";
 import {
+  deletePostsByIdApiMutation,
   getPostsApiOptions,
   postPostsApiMutation,
   putPostsByIdApiMutation,
-  deletePostsByIdApiMutation,
 } from "./generated/@tanstack/react-query.gen";
 import type { Post } from "./generated/types.gen";
 
@@ -136,8 +136,15 @@ function App() {
               </span>
             </div>
             <div className="post-actions">
-              <button type="button" onClick={() => handleEdit(post)}>Edit</button>
-              <button type="button" onClick={() => deletePost.mutate({ path: { id: post.id } })}>Delete</button>
+              <button type="button" onClick={() => handleEdit(post)}>
+                Edit
+              </button>
+              <button
+                type="button"
+                onClick={() => deletePost.mutate({ path: { id: post.id } })}
+              >
+                Delete
+              </button>
             </div>
           </div>
         ))}

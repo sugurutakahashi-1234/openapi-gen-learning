@@ -24,7 +24,8 @@
       "Bash(play:*)",
       "Bash(npx tsc:*)",
       "Bash(npx biome check:*)",
-      "Bash(npx biome format:*)"
+      "Bash(npx biome format:*)",
+      "Bash(npm install:*)"
     ],
     "deny": []
   }
