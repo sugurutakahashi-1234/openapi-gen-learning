@@ -28,7 +28,8 @@
       "Bash(npm install:*)",
       "Bash(cp:*)",
       "Bash(pnpm run:*)",
-      "Bash(pnpm add:*)"
+      "Bash(pnpm add:*)",
+      "Bash(mv:*)"
     ],
     "deny": []
   }
