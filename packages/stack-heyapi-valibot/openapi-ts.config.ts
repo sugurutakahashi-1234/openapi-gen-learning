@@ -18,13 +18,13 @@ export default defineConfig({
       name: "@hey-api/typescript",
       enums: "javascript",
     },
-    "zod",
+    "valibot",
     {
       name: "@hey-api/sdk",
       validator: true,
     },
     {
-      name: "zod",
+      name: "valibot",
       exportFromIndex: true,
     },
     "@tanstack/react-query",
