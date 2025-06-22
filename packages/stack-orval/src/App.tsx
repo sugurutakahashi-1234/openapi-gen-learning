@@ -1,18 +1,18 @@
 import { useState } from "react";
-import {
-  useDeletePostsByIdApi,
-  useGetPostsApi,
-  usePostPostsApi,
-  usePutPostsByIdApi,
-} from "./generated/api";
 import type { Post } from "./generated/model";
+import {
+  useCreatePost,
+  useDeletePost,
+  usePosts,
+  useUpdatePost,
+} from "./hooks/usePosts";
 
 function App() {
   const [selectedPostId, setSelectedPostId] = useState<string | null>(null);
-  const { data: postsResponse, isLoading, error } = useGetPostsApi();
-  const createPost = usePostPostsApi();
-  const updatePost = usePutPostsByIdApi();
-  const deletePost = useDeletePostsByIdApi();
+  const { data: postsResponse, isLoading, error } = usePosts();
+  const createPost = useCreatePost();
+  const updatePost = useUpdatePost();
+  const deletePost = useDeletePost();
 
   const [formData, setFormData] = useState({
     title: "",
@@ -59,7 +59,14 @@ function App() {
 
   return (
     <div className="container">
-      <h1 style={{ backgroundColor: "#9b59b6", color: "white", padding: "1rem", borderRadius: "8px" }}>
+      <h1
+        style={{
+          backgroundColor: "#9b59b6",
+          color: "white",
+          padding: "1rem",
+          borderRadius: "8px",
+        }}
+      >
         ⚔️ Stack Orval (orval)
       </h1>
 
