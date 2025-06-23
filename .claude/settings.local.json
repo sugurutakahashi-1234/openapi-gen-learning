@@ -42,7 +42,9 @@
       "Bash(for dir in packages/*/)",
       "Bash(do echo -n \"$(basename \"$dir\"): \")",
       "Bash(done)",
-      "mcp__ide__getDiagnostics"
+      "mcp__ide__getDiagnostics",
+      "Bash(pnpm list:*)",
+      "Bash(pnpm install:*)"
     ],
     "deny": []
   }

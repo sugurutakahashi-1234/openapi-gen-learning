@@ -6,7 +6,6 @@
  */
 import { useQueryClient } from "@tanstack/react-query";
 import { $api } from "../api/client";
-import type { components } from "../generated/api";
 
 /**
  * 投稿一覧を取得するフック
@@ -46,13 +45,7 @@ export const useUpdatePost = () => {
   const queryClient = useQueryClient();
 
   return $api.useMutation("put", "/api/posts/{id}", {
-    onSuccess: (
-      _data: components["schemas"]["Post"] | undefined,
-      variables: {
-        params: { path: { id: string } };
-        body?: components["schemas"]["UpdatePost"];
-      },
-    ) => {
+    onSuccess: (_data, variables) => {
       queryClient.invalidateQueries({
         queryKey: ["get", "/api/posts"],
       });
