@@ -1,5 +1,6 @@
 // ブラウザ環境でのMSWセットアップ
 import { setupWorker } from "msw/browser";
+import { queryClient } from "../queryClient";
 import { handlers } from "./handlers";
 
 // Service Workerのセットアップ（初期状態はハンドラーなし）
@@ -16,4 +17,8 @@ export function setMockMode(enabled: boolean) {
     worker.resetHandlers();
     console.log("🌐 MSWモード: OFF");
   }
+
+  // React Queryのキャッシュを無効化して再フェッチ
+  queryClient.invalidateQueries();
+  console.log("🔄 React Queryキャッシュを無効化しました");
 }

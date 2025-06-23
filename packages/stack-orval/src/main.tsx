@@ -1,19 +1,10 @@
-import { QueryClient, QueryClientProvider } from "@tanstack/react-query";
+import { QueryClientProvider } from "@tanstack/react-query";
 import { ReactQueryDevtools } from "@tanstack/react-query-devtools";
 import React from "react";
 import ReactDOM from "react-dom/client";
 import App from "./App";
 import "./index.css";
-
-// React Queryクライアントの設定
-const queryClient = new QueryClient({
-  defaultOptions: {
-    queries: {
-      staleTime: 5 * 60 * 1000, // 5分
-      refetchOnWindowFocus: false,
-    },
-  },
-});
+import { queryClient } from "./queryClient";
 
 // 開発環境でMSWを起動してからアプリをレンダリング
 async function prepare() {
