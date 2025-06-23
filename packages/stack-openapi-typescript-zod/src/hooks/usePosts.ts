@@ -11,7 +11,14 @@ import { $api } from "../api/client";
  * 投稿一覧を取得するフック
  */
 export const usePosts = () => {
-  return $api.useQuery("get", "/api/posts");
+  return $api.useQuery(
+    "get",
+    "/api/posts",
+    {},
+    {
+      select: (data) => data.data, // レスポンスの階層を簡略化
+    },
+  );
 };
 
 /**

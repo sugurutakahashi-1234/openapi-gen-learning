@@ -44,7 +44,9 @@
       "Bash(done)",
       "mcp__ide__getDiagnostics",
       "Bash(pnpm list:*)",
-      "Bash(pnpm install:*)"
+      "Bash(pnpm install:*)",
+      "Bash(npx msw init:*)",
+      "Bash(curl:*)"
     ],
     "deny": []
   }

@@ -17,7 +17,10 @@ import {
  * 投稿一覧を取得するフック
  */
 export const usePosts = () => {
-  return useQuery(getPostsApiOptions());
+  return useQuery({
+    ...getPostsApiOptions(),
+    select: (data) => data.data, // レスポンスの階層を簡略化
+  });
 };
 
 /**

@@ -24,13 +24,6 @@ import type {
   UseQueryResult
 } from '@tanstack/react-query';
 
-import axios from 'axios';
-import type {
-  AxiosError,
-  AxiosRequestConfig,
-  AxiosResponse
-} from 'axios';
-
 import type {
   CreateComment,
   CreatePost,
@@ -65,32 +58,64 @@ import type {
  * システムに登録されているすべてのユーザーを取得します
  * @summary 全ユーザーを取得
  */
-export const getUsersApi = (
-     options?: AxiosRequestConfig
- ): Promise<AxiosResponse<GetUsersApi200>> => {
+export type getUsersApiResponse200 = {
+  data: GetUsersApi200
+  status: 200
+}
+
+export type getUsersApiResponse400 = {
+  data: ErrorResponse
+  status: 400
+}
+    
+export type getUsersApiResponseComposite = getUsersApiResponse200 | getUsersApiResponse400;
+    
+export type getUsersApiResponse = getUsersApiResponseComposite & {
+  headers: Headers;
+}
+
+export const getGetUsersApiUrl = () => {
+
+
+  
+
+  return `http://localhost:4010/api/users`
+}
+
+export const getUsersApi = async ( options?: RequestInit): Promise<getUsersApiResponse> => {
+  
+  const res = await fetch(getGetUsersApiUrl(),
+  {      
+    ...options,
+    method: 'GET'
     
     
-    return axios.get(
-      `/api/users`,options
-    );
   }
+)
+
+  const body = [204, 205, 304].includes(res.status) ? null : await res.text()
+  const data: getUsersApiResponse['data'] = body ? JSON.parse(body) : {}
+
+  return { data, status: res.status, headers: res.headers } as getUsersApiResponse
+}
+
 
 
 export const getGetUsersApiQueryKey = () => {
-    return [`/api/users`] as const;
+    return [`http://localhost:4010/api/users`] as const;
     }
 
     
-export const getGetUsersApiQueryOptions = <TData = Awaited<ReturnType<typeof getUsersApi>>, TError = AxiosError<ErrorResponse>>( options?: { query?:Partial<UseQueryOptions<Awaited<ReturnType<typeof getUsersApi>>, TError, TData>>, axios?: AxiosRequestConfig}
+export const getGetUsersApiQueryOptions = <TData = Awaited<ReturnType<typeof getUsersApi>>, TError = ErrorResponse>( options?: { query?:Partial<UseQueryOptions<Awaited<ReturnType<typeof getUsersApi>>, TError, TData>>, fetch?: RequestInit}
 ) => {
 
-const {query: queryOptions, axios: axiosOptions} = options ?? {};
+const {query: queryOptions, fetch: fetchOptions} = options ?? {};
 
   const queryKey =  queryOptions?.queryKey ?? getGetUsersApiQueryKey();
 
   
 
-    const queryFn: QueryFunction<Awaited<ReturnType<typeof getUsersApi>>> = ({ signal }) => getUsersApi({ signal, ...axiosOptions });
+    const queryFn: QueryFunction<Awaited<ReturnType<typeof getUsersApi>>> = ({ signal }) => getUsersApi({ signal, ...fetchOptions });
 
       
 
@@ -100,39 +125,39 @@ const {query: queryOptions, axios: axiosOptions} = options ?? {};
 }
 
 export type GetUsersApiQueryResult = NonNullable<Awaited<ReturnType<typeof getUsersApi>>>
-export type GetUsersApiQueryError = AxiosError<ErrorResponse>
+export type GetUsersApiQueryError = ErrorResponse
 
 
-export function useGetUsersApi<TData = Awaited<ReturnType<typeof getUsersApi>>, TError = AxiosError<ErrorResponse>>(
+export function useGetUsersApi<TData = Awaited<ReturnType<typeof getUsersApi>>, TError = ErrorResponse>(
   options: { query:Partial<UseQueryOptions<Awaited<ReturnType<typeof getUsersApi>>, TError, TData>> & Pick<
         DefinedInitialDataOptions<
           Awaited<ReturnType<typeof getUsersApi>>,
           TError,
           Awaited<ReturnType<typeof getUsersApi>>
         > , 'initialData'
-      >, axios?: AxiosRequestConfig}
+      >, fetch?: RequestInit}
  , queryClient?: QueryClient
   ):  DefinedUseQueryResult<TData, TError> & { queryKey: DataTag<QueryKey, TData, TError> }
-export function useGetUsersApi<TData = Awaited<ReturnType<typeof getUsersApi>>, TError = AxiosError<ErrorResponse>>(
+export function useGetUsersApi<TData = Awaited<ReturnType<typeof getUsersApi>>, TError = ErrorResponse>(
   options?: { query?:Partial<UseQueryOptions<Awaited<ReturnType<typeof getUsersApi>>, TError, TData>> & Pick<
         UndefinedInitialDataOptions<
           Awaited<ReturnType<typeof getUsersApi>>,
           TError,
           Awaited<ReturnType<typeof getUsersApi>>
         > , 'initialData'
-      >, axios?: AxiosRequestConfig}
+      >, fetch?: RequestInit}
  , queryClient?: QueryClient
   ):  UseQueryResult<TData, TError> & { queryKey: DataTag<QueryKey, TData, TError> }
-export function useGetUsersApi<TData = Awaited<ReturnType<typeof getUsersApi>>, TError = AxiosError<ErrorResponse>>(
-  options?: { query?:Partial<UseQueryOptions<Awaited<ReturnType<typeof getUsersApi>>, TError, TData>>, axios?: AxiosRequestConfig}
+export function useGetUsersApi<TData = Awaited<ReturnType<typeof getUsersApi>>, TError = ErrorResponse>(
+  options?: { query?:Partial<UseQueryOptions<Awaited<ReturnType<typeof getUsersApi>>, TError, TData>>, fetch?: RequestInit}
  , queryClient?: QueryClient
   ):  UseQueryResult<TData, TError> & { queryKey: DataTag<QueryKey, TData, TError> }
 /**
  * @summary 全ユーザーを取得
  */
 
-export function useGetUsersApi<TData = Awaited<ReturnType<typeof getUsersApi>>, TError = AxiosError<ErrorResponse>>(
-  options?: { query?:Partial<UseQueryOptions<Awaited<ReturnType<typeof getUsersApi>>, TError, TData>>, axios?: AxiosRequestConfig}
+export function useGetUsersApi<TData = Awaited<ReturnType<typeof getUsersApi>>, TError = ErrorResponse>(
+  options?: { query?:Partial<UseQueryOptions<Awaited<ReturnType<typeof getUsersApi>>, TError, TData>>, fetch?: RequestInit}
  , queryClient?: QueryClient 
  ):  UseQueryResult<TData, TError> & { queryKey: DataTag<QueryKey, TData, TError> } {
 
@@ -152,29 +177,61 @@ export function useGetUsersApi<TData = Awaited<ReturnType<typeof getUsersApi>>, 
  * 新しいユーザーをシステムに登録します
  * @summary 新規ユーザーを作成
  */
-export const postUsersApi = (
-    createUser: CreateUser, options?: AxiosRequestConfig
- ): Promise<AxiosResponse<PostUsersApi201>> => {
+export type postUsersApiResponse201 = {
+  data: PostUsersApi201
+  status: 201
+}
+
+export type postUsersApiResponse400 = {
+  data: ErrorResponse
+  status: 400
+}
     
+export type postUsersApiResponseComposite = postUsersApiResponse201 | postUsersApiResponse400;
     
-    return axios.post(
-      `/api/users`,
-      createUser,options
-    );
+export type postUsersApiResponse = postUsersApiResponseComposite & {
+  headers: Headers;
+}
+
+export const getPostUsersApiUrl = () => {
+
+
+  
+
+  return `http://localhost:4010/api/users`
+}
+
+export const postUsersApi = async (createUser: CreateUser, options?: RequestInit): Promise<postUsersApiResponse> => {
+  
+  const res = await fetch(getPostUsersApiUrl(),
+  {      
+    ...options,
+    method: 'POST',
+    headers: { 'Content-Type': 'application/json', ...options?.headers },
+    body: JSON.stringify(
+      createUser,)
   }
+)
+
+  const body = [204, 205, 304].includes(res.status) ? null : await res.text()
+  const data: postUsersApiResponse['data'] = body ? JSON.parse(body) : {}
+
+  return { data, status: res.status, headers: res.headers } as postUsersApiResponse
+}
 
 
 
-export const getPostUsersApiMutationOptions = <TError = AxiosError<ErrorResponse>,
-    TContext = unknown>(options?: { mutation?:UseMutationOptions<Awaited<ReturnType<typeof postUsersApi>>, TError,{data: CreateUser}, TContext>, axios?: AxiosRequestConfig}
+
+export const getPostUsersApiMutationOptions = <TError = ErrorResponse,
+    TContext = unknown>(options?: { mutation?:UseMutationOptions<Awaited<ReturnType<typeof postUsersApi>>, TError,{data: CreateUser}, TContext>, fetch?: RequestInit}
 ): UseMutationOptions<Awaited<ReturnType<typeof postUsersApi>>, TError,{data: CreateUser}, TContext> => {
 
 const mutationKey = ['postUsersApi'];
-const {mutation: mutationOptions, axios: axiosOptions} = options ?
+const {mutation: mutationOptions, fetch: fetchOptions} = options ?
       options.mutation && 'mutationKey' in options.mutation && options.mutation.mutationKey ?
       options
       : {...options, mutation: {...options.mutation, mutationKey}}
-      : {mutation: { mutationKey, }, axios: undefined};
+      : {mutation: { mutationKey, }, fetch: undefined};
 
       
 
@@ -182,7 +239,7 @@ const {mutation: mutationOptions, axios: axiosOptions} = options ?
       const mutationFn: MutationFunction<Awaited<ReturnType<typeof postUsersApi>>, {data: CreateUser}> = (props) => {
           const {data} = props ?? {};
 
-          return  postUsersApi(data,axiosOptions)
+          return  postUsersApi(data,fetchOptions)
         }
 
         
@@ -192,13 +249,13 @@ const {mutation: mutationOptions, axios: axiosOptions} = options ?
 
     export type PostUsersApiMutationResult = NonNullable<Awaited<ReturnType<typeof postUsersApi>>>
     export type PostUsersApiMutationBody = CreateUser
-    export type PostUsersApiMutationError = AxiosError<ErrorResponse>
+    export type PostUsersApiMutationError = ErrorResponse
 
     /**
  * @summary 新規ユーザーを作成
  */
-export const usePostUsersApi = <TError = AxiosError<ErrorResponse>,
-    TContext = unknown>(options?: { mutation?:UseMutationOptions<Awaited<ReturnType<typeof postUsersApi>>, TError,{data: CreateUser}, TContext>, axios?: AxiosRequestConfig}
+export const usePostUsersApi = <TError = ErrorResponse,
+    TContext = unknown>(options?: { mutation?:UseMutationOptions<Awaited<ReturnType<typeof postUsersApi>>, TError,{data: CreateUser}, TContext>, fetch?: RequestInit}
  , queryClient?: QueryClient): UseMutationResult<
         Awaited<ReturnType<typeof postUsersApi>>,
         TError,
@@ -215,32 +272,64 @@ export const usePostUsersApi = <TError = AxiosError<ErrorResponse>,
  * 指定されたIDのユーザー情報を取得します
  * @summary 特定のユーザーを取得
  */
-export const getUsersByIdApi = (
-    id: string, options?: AxiosRequestConfig
- ): Promise<AxiosResponse<GetUsersByIdApi200>> => {
+export type getUsersByIdApiResponse200 = {
+  data: GetUsersByIdApi200
+  status: 200
+}
+
+export type getUsersByIdApiResponse400 = {
+  data: ErrorResponse
+  status: 400
+}
+    
+export type getUsersByIdApiResponseComposite = getUsersByIdApiResponse200 | getUsersByIdApiResponse400;
+    
+export type getUsersByIdApiResponse = getUsersByIdApiResponseComposite & {
+  headers: Headers;
+}
+
+export const getGetUsersByIdApiUrl = (id: string,) => {
+
+
+  
+
+  return `http://localhost:4010/api/users/${id}`
+}
+
+export const getUsersByIdApi = async (id: string, options?: RequestInit): Promise<getUsersByIdApiResponse> => {
+  
+  const res = await fetch(getGetUsersByIdApiUrl(id),
+  {      
+    ...options,
+    method: 'GET'
     
     
-    return axios.get(
-      `/api/users/${id}`,options
-    );
   }
+)
+
+  const body = [204, 205, 304].includes(res.status) ? null : await res.text()
+  const data: getUsersByIdApiResponse['data'] = body ? JSON.parse(body) : {}
+
+  return { data, status: res.status, headers: res.headers } as getUsersByIdApiResponse
+}
+
 
 
 export const getGetUsersByIdApiQueryKey = (id: string,) => {
-    return [`/api/users/${id}`] as const;
+    return [`http://localhost:4010/api/users/${id}`] as const;
     }
 
     
-export const getGetUsersByIdApiQueryOptions = <TData = Awaited<ReturnType<typeof getUsersByIdApi>>, TError = AxiosError<ErrorResponse>>(id: string, options?: { query?:Partial<UseQueryOptions<Awaited<ReturnType<typeof getUsersByIdApi>>, TError, TData>>, axios?: AxiosRequestConfig}
+export const getGetUsersByIdApiQueryOptions = <TData = Awaited<ReturnType<typeof getUsersByIdApi>>, TError = ErrorResponse>(id: string, options?: { query?:Partial<UseQueryOptions<Awaited<ReturnType<typeof getUsersByIdApi>>, TError, TData>>, fetch?: RequestInit}
 ) => {
 
-const {query: queryOptions, axios: axiosOptions} = options ?? {};
+const {query: queryOptions, fetch: fetchOptions} = options ?? {};
 
   const queryKey =  queryOptions?.queryKey ?? getGetUsersByIdApiQueryKey(id);
 
   
 
-    const queryFn: QueryFunction<Awaited<ReturnType<typeof getUsersByIdApi>>> = ({ signal }) => getUsersByIdApi(id, { signal, ...axiosOptions });
+    const queryFn: QueryFunction<Awaited<ReturnType<typeof getUsersByIdApi>>> = ({ signal }) => getUsersByIdApi(id, { signal, ...fetchOptions });
 
       
 
@@ -250,39 +339,39 @@ const {query: queryOptions, axios: axiosOptions} = options ?? {};
 }
 
 export type GetUsersByIdApiQueryResult = NonNullable<Awaited<ReturnType<typeof getUsersByIdApi>>>
-export type GetUsersByIdApiQueryError = AxiosError<ErrorResponse>
+export type GetUsersByIdApiQueryError = ErrorResponse
 
 
-export function useGetUsersByIdApi<TData = Awaited<ReturnType<typeof getUsersByIdApi>>, TError = AxiosError<ErrorResponse>>(
+export function useGetUsersByIdApi<TData = Awaited<ReturnType<typeof getUsersByIdApi>>, TError = ErrorResponse>(
  id: string, options: { query:Partial<UseQueryOptions<Awaited<ReturnType<typeof getUsersByIdApi>>, TError, TData>> & Pick<
         DefinedInitialDataOptions<
           Awaited<ReturnType<typeof getUsersByIdApi>>,
           TError,
           Awaited<ReturnType<typeof getUsersByIdApi>>
         > , 'initialData'
-      >, axios?: AxiosRequestConfig}
+      >, fetch?: RequestInit}
  , queryClient?: QueryClient
   ):  DefinedUseQueryResult<TData, TError> & { queryKey: DataTag<QueryKey, TData, TError> }
-export function useGetUsersByIdApi<TData = Awaited<ReturnType<typeof getUsersByIdApi>>, TError = AxiosError<ErrorResponse>>(
+export function useGetUsersByIdApi<TData = Awaited<ReturnType<typeof getUsersByIdApi>>, TError = ErrorResponse>(
  id: string, options?: { query?:Partial<UseQueryOptions<Awaited<ReturnType<typeof getUsersByIdApi>>, TError, TData>> & Pick<
         UndefinedInitialDataOptions<
           Awaited<ReturnType<typeof getUsersByIdApi>>,
           TError,
           Awaited<ReturnType<typeof getUsersByIdApi>>
         > , 'initialData'
-      >, axios?: AxiosRequestConfig}
+      >, fetch?: RequestInit}
  , queryClient?: QueryClient
   ):  UseQueryResult<TData, TError> & { queryKey: DataTag<QueryKey, TData, TError> }
-export function useGetUsersByIdApi<TData = Awaited<ReturnType<typeof getUsersByIdApi>>, TError = AxiosError<ErrorResponse>>(
- id: string, options?: { query?:Partial<UseQueryOptions<Awaited<ReturnType<typeof getUsersByIdApi>>, TError, TData>>, axios?: AxiosRequestConfig}
+export function useGetUsersByIdApi<TData = Awaited<ReturnType<typeof getUsersByIdApi>>, TError = ErrorResponse>(
+ id: string, options?: { query?:Partial<UseQueryOptions<Awaited<ReturnType<typeof getUsersByIdApi>>, TError, TData>>, fetch?: RequestInit}
  , queryClient?: QueryClient
   ):  UseQueryResult<TData, TError> & { queryKey: DataTag<QueryKey, TData, TError> }
 /**
  * @summary 特定のユーザーを取得
  */
 
-export function useGetUsersByIdApi<TData = Awaited<ReturnType<typeof getUsersByIdApi>>, TError = AxiosError<ErrorResponse>>(
- id: string, options?: { query?:Partial<UseQueryOptions<Awaited<ReturnType<typeof getUsersByIdApi>>, TError, TData>>, axios?: AxiosRequestConfig}
+export function useGetUsersByIdApi<TData = Awaited<ReturnType<typeof getUsersByIdApi>>, TError = ErrorResponse>(
+ id: string, options?: { query?:Partial<UseQueryOptions<Awaited<ReturnType<typeof getUsersByIdApi>>, TError, TData>>, fetch?: RequestInit}
  , queryClient?: QueryClient 
  ):  UseQueryResult<TData, TError> & { queryKey: DataTag<QueryKey, TData, TError> } {
 
@@ -302,28 +391,60 @@ export function useGetUsersByIdApi<TData = Awaited<ReturnType<typeof getUsersByI
  * 指定されたIDのユーザーを削除します
  * @summary ユーザーを削除
  */
-export const deleteUsersByIdApi = (
-    id: string, options?: AxiosRequestConfig
- ): Promise<AxiosResponse<void>> => {
+export type deleteUsersByIdApiResponse204 = {
+  data: void
+  status: 204
+}
+
+export type deleteUsersByIdApiResponse400 = {
+  data: ErrorResponse
+  status: 400
+}
+    
+export type deleteUsersByIdApiResponseComposite = deleteUsersByIdApiResponse204 | deleteUsersByIdApiResponse400;
+    
+export type deleteUsersByIdApiResponse = deleteUsersByIdApiResponseComposite & {
+  headers: Headers;
+}
+
+export const getDeleteUsersByIdApiUrl = (id: string,) => {
+
+
+  
+
+  return `http://localhost:4010/api/users/${id}`
+}
+
+export const deleteUsersByIdApi = async (id: string, options?: RequestInit): Promise<deleteUsersByIdApiResponse> => {
+  
+  const res = await fetch(getDeleteUsersByIdApiUrl(id),
+  {      
+    ...options,
+    method: 'DELETE'
     
     
-    return axios.delete(
-      `/api/users/${id}`,options
-    );
   }
+)
+
+  const body = [204, 205, 304].includes(res.status) ? null : await res.text()
+  const data: deleteUsersByIdApiResponse['data'] = body ? JSON.parse(body) : {}
+
+  return { data, status: res.status, headers: res.headers } as deleteUsersByIdApiResponse
+}
 
 
 
-export const getDeleteUsersByIdApiMutationOptions = <TError = AxiosError<ErrorResponse>,
-    TContext = unknown>(options?: { mutation?:UseMutationOptions<Awaited<ReturnType<typeof deleteUsersByIdApi>>, TError,{id: string}, TContext>, axios?: AxiosRequestConfig}
+
+export const getDeleteUsersByIdApiMutationOptions = <TError = ErrorResponse,
+    TContext = unknown>(options?: { mutation?:UseMutationOptions<Awaited<ReturnType<typeof deleteUsersByIdApi>>, TError,{id: string}, TContext>, fetch?: RequestInit}
 ): UseMutationOptions<Awaited<ReturnType<typeof deleteUsersByIdApi>>, TError,{id: string}, TContext> => {
 
 const mutationKey = ['deleteUsersByIdApi'];
-const {mutation: mutationOptions, axios: axiosOptions} = options ?
+const {mutation: mutationOptions, fetch: fetchOptions} = options ?
       options.mutation && 'mutationKey' in options.mutation && options.mutation.mutationKey ?
       options
       : {...options, mutation: {...options.mutation, mutationKey}}
-      : {mutation: { mutationKey, }, axios: undefined};
+      : {mutation: { mutationKey, }, fetch: undefined};
 
       
 
@@ -331,7 +452,7 @@ const {mutation: mutationOptions, axios: axiosOptions} = options ?
       const mutationFn: MutationFunction<Awaited<ReturnType<typeof deleteUsersByIdApi>>, {id: string}> = (props) => {
           const {id} = props ?? {};
 
-          return  deleteUsersByIdApi(id,axiosOptions)
+          return  deleteUsersByIdApi(id,fetchOptions)
         }
 
         
@@ -341,13 +462,13 @@ const {mutation: mutationOptions, axios: axiosOptions} = options ?
 
     export type DeleteUsersByIdApiMutationResult = NonNullable<Awaited<ReturnType<typeof deleteUsersByIdApi>>>
     
-    export type DeleteUsersByIdApiMutationError = AxiosError<ErrorResponse>
+    export type DeleteUsersByIdApiMutationError = ErrorResponse
 
     /**
  * @summary ユーザーを削除
  */
-export const useDeleteUsersByIdApi = <TError = AxiosError<ErrorResponse>,
-    TContext = unknown>(options?: { mutation?:UseMutationOptions<Awaited<ReturnType<typeof deleteUsersByIdApi>>, TError,{id: string}, TContext>, axios?: AxiosRequestConfig}
+export const useDeleteUsersByIdApi = <TError = ErrorResponse,
+    TContext = unknown>(options?: { mutation?:UseMutationOptions<Awaited<ReturnType<typeof deleteUsersByIdApi>>, TError,{id: string}, TContext>, fetch?: RequestInit}
  , queryClient?: QueryClient): UseMutationResult<
         Awaited<ReturnType<typeof deleteUsersByIdApi>>,
         TError,
@@ -364,34 +485,71 @@ export const useDeleteUsersByIdApi = <TError = AxiosError<ErrorResponse>,
  * システムに登録されているすべての投稿を取得します。公開状態でフィルタ可能
  * @summary 全投稿を取得
  */
-export const getPostsApi = (
-    params?: GetPostsApiParams, options?: AxiosRequestConfig
- ): Promise<AxiosResponse<GetPostsApi200>> => {
+export type getPostsApiResponse200 = {
+  data: GetPostsApi200
+  status: 200
+}
+
+export type getPostsApiResponse400 = {
+  data: ErrorResponse
+  status: 400
+}
     
+export type getPostsApiResponseComposite = getPostsApiResponse200 | getPostsApiResponse400;
     
-    return axios.get(
-      `/api/posts`,{
+export type getPostsApiResponse = getPostsApiResponseComposite & {
+  headers: Headers;
+}
+
+export const getGetPostsApiUrl = (params?: GetPostsApiParams,) => {
+  const normalizedParams = new URLSearchParams();
+
+  Object.entries(params || {}).forEach(([key, value]) => {
+    
+    if (value !== undefined) {
+      normalizedParams.append(key, value === null ? 'null' : value.toString())
+    }
+  });
+
+  const stringifiedParams = normalizedParams.toString();
+
+  return stringifiedParams.length > 0 ? `http://localhost:4010/api/posts?${stringifiedParams}` : `http://localhost:4010/api/posts`
+}
+
+export const getPostsApi = async (params?: GetPostsApiParams, options?: RequestInit): Promise<getPostsApiResponse> => {
+  
+  const res = await fetch(getGetPostsApiUrl(params),
+  {      
     ...options,
-        params: {...params, ...options?.params},}
-    );
+    method: 'GET'
+    
+    
   }
+)
+
+  const body = [204, 205, 304].includes(res.status) ? null : await res.text()
+  const data: getPostsApiResponse['data'] = body ? JSON.parse(body) : {}
+
+  return { data, status: res.status, headers: res.headers } as getPostsApiResponse
+}
+
 
 
 export const getGetPostsApiQueryKey = (params?: GetPostsApiParams,) => {
-    return [`/api/posts`, ...(params ? [params]: [])] as const;
+    return [`http://localhost:4010/api/posts`, ...(params ? [params]: [])] as const;
     }
 
     
-export const getGetPostsApiQueryOptions = <TData = Awaited<ReturnType<typeof getPostsApi>>, TError = AxiosError<ErrorResponse>>(params?: GetPostsApiParams, options?: { query?:Partial<UseQueryOptions<Awaited<ReturnType<typeof getPostsApi>>, TError, TData>>, axios?: AxiosRequestConfig}
+export const getGetPostsApiQueryOptions = <TData = Awaited<ReturnType<typeof getPostsApi>>, TError = ErrorResponse>(params?: GetPostsApiParams, options?: { query?:Partial<UseQueryOptions<Awaited<ReturnType<typeof getPostsApi>>, TError, TData>>, fetch?: RequestInit}
 ) => {
 
-const {query: queryOptions, axios: axiosOptions} = options ?? {};
+const {query: queryOptions, fetch: fetchOptions} = options ?? {};
 
   const queryKey =  queryOptions?.queryKey ?? getGetPostsApiQueryKey(params);
 
   
 
-    const queryFn: QueryFunction<Awaited<ReturnType<typeof getPostsApi>>> = ({ signal }) => getPostsApi(params, { signal, ...axiosOptions });
+    const queryFn: QueryFunction<Awaited<ReturnType<typeof getPostsApi>>> = ({ signal }) => getPostsApi(params, { signal, ...fetchOptions });
 
       
 
@@ -401,39 +559,39 @@ const {query: queryOptions, axios: axiosOptions} = options ?? {};
 }
 
 export type GetPostsApiQueryResult = NonNullable<Awaited<ReturnType<typeof getPostsApi>>>
-export type GetPostsApiQueryError = AxiosError<ErrorResponse>
+export type GetPostsApiQueryError = ErrorResponse
 
 
-export function useGetPostsApi<TData = Awaited<ReturnType<typeof getPostsApi>>, TError = AxiosError<ErrorResponse>>(
+export function useGetPostsApi<TData = Awaited<ReturnType<typeof getPostsApi>>, TError = ErrorResponse>(
  params: undefined |  GetPostsApiParams, options: { query:Partial<UseQueryOptions<Awaited<ReturnType<typeof getPostsApi>>, TError, TData>> & Pick<
         DefinedInitialDataOptions<
           Awaited<ReturnType<typeof getPostsApi>>,
           TError,
           Awaited<ReturnType<typeof getPostsApi>>
         > , 'initialData'
-      >, axios?: AxiosRequestConfig}
+      >, fetch?: RequestInit}
  , queryClient?: QueryClient
   ):  DefinedUseQueryResult<TData, TError> & { queryKey: DataTag<QueryKey, TData, TError> }
-export function useGetPostsApi<TData = Awaited<ReturnType<typeof getPostsApi>>, TError = AxiosError<ErrorResponse>>(
+export function useGetPostsApi<TData = Awaited<ReturnType<typeof getPostsApi>>, TError = ErrorResponse>(
  params?: GetPostsApiParams, options?: { query?:Partial<UseQueryOptions<Awaited<ReturnType<typeof getPostsApi>>, TError, TData>> & Pick<
         UndefinedInitialDataOptions<
           Awaited<ReturnType<typeof getPostsApi>>,
           TError,
           Awaited<ReturnType<typeof getPostsApi>>
         > , 'initialData'
-      >, axios?: AxiosRequestConfig}
+      >, fetch?: RequestInit}
  , queryClient?: QueryClient
   ):  UseQueryResult<TData, TError> & { queryKey: DataTag<QueryKey, TData, TError> }
-export function useGetPostsApi<TData = Awaited<ReturnType<typeof getPostsApi>>, TError = AxiosError<ErrorResponse>>(
- params?: GetPostsApiParams, options?: { query?:Partial<UseQueryOptions<Awaited<ReturnType<typeof getPostsApi>>, TError, TData>>, axios?: AxiosRequestConfig}
+export function useGetPostsApi<TData = Awaited<ReturnType<typeof getPostsApi>>, TError = ErrorResponse>(
+ params?: GetPostsApiParams, options?: { query?:Partial<UseQueryOptions<Awaited<ReturnType<typeof getPostsApi>>, TError, TData>>, fetch?: RequestInit}
  , queryClient?: QueryClient
   ):  UseQueryResult<TData, TError> & { queryKey: DataTag<QueryKey, TData, TError> }
 /**
  * @summary 全投稿を取得
  */
 
-export function useGetPostsApi<TData = Awaited<ReturnType<typeof getPostsApi>>, TError = AxiosError<ErrorResponse>>(
- params?: GetPostsApiParams, options?: { query?:Partial<UseQueryOptions<Awaited<ReturnType<typeof getPostsApi>>, TError, TData>>, axios?: AxiosRequestConfig}
+export function useGetPostsApi<TData = Awaited<ReturnType<typeof getPostsApi>>, TError = ErrorResponse>(
+ params?: GetPostsApiParams, options?: { query?:Partial<UseQueryOptions<Awaited<ReturnType<typeof getPostsApi>>, TError, TData>>, fetch?: RequestInit}
  , queryClient?: QueryClient 
  ):  UseQueryResult<TData, TError> & { queryKey: DataTag<QueryKey, TData, TError> } {
 
@@ -453,29 +611,61 @@ export function useGetPostsApi<TData = Awaited<ReturnType<typeof getPostsApi>>, 
  * 新しい投稿をシステムに登録します
  * @summary 新規投稿を作成
  */
-export const postPostsApi = (
-    createPost: CreatePost, options?: AxiosRequestConfig
- ): Promise<AxiosResponse<PostPostsApi201>> => {
+export type postPostsApiResponse201 = {
+  data: PostPostsApi201
+  status: 201
+}
+
+export type postPostsApiResponse400 = {
+  data: ErrorResponse
+  status: 400
+}
     
+export type postPostsApiResponseComposite = postPostsApiResponse201 | postPostsApiResponse400;
     
-    return axios.post(
-      `/api/posts`,
-      createPost,options
-    );
+export type postPostsApiResponse = postPostsApiResponseComposite & {
+  headers: Headers;
+}
+
+export const getPostPostsApiUrl = () => {
+
+
+  
+
+  return `http://localhost:4010/api/posts`
+}
+
+export const postPostsApi = async (createPost: CreatePost, options?: RequestInit): Promise<postPostsApiResponse> => {
+  
+  const res = await fetch(getPostPostsApiUrl(),
+  {      
+    ...options,
+    method: 'POST',
+    headers: { 'Content-Type': 'application/json', ...options?.headers },
+    body: JSON.stringify(
+      createPost,)
   }
+)
+
+  const body = [204, 205, 304].includes(res.status) ? null : await res.text()
+  const data: postPostsApiResponse['data'] = body ? JSON.parse(body) : {}
+
+  return { data, status: res.status, headers: res.headers } as postPostsApiResponse
+}
 
 
 
-export const getPostPostsApiMutationOptions = <TError = AxiosError<ErrorResponse>,
-    TContext = unknown>(options?: { mutation?:UseMutationOptions<Awaited<ReturnType<typeof postPostsApi>>, TError,{data: CreatePost}, TContext>, axios?: AxiosRequestConfig}
+
+export const getPostPostsApiMutationOptions = <TError = ErrorResponse,
+    TContext = unknown>(options?: { mutation?:UseMutationOptions<Awaited<ReturnType<typeof postPostsApi>>, TError,{data: CreatePost}, TContext>, fetch?: RequestInit}
 ): UseMutationOptions<Awaited<ReturnType<typeof postPostsApi>>, TError,{data: CreatePost}, TContext> => {
 
 const mutationKey = ['postPostsApi'];
-const {mutation: mutationOptions, axios: axiosOptions} = options ?
+const {mutation: mutationOptions, fetch: fetchOptions} = options ?
       options.mutation && 'mutationKey' in options.mutation && options.mutation.mutationKey ?
       options
       : {...options, mutation: {...options.mutation, mutationKey}}
-      : {mutation: { mutationKey, }, axios: undefined};
+      : {mutation: { mutationKey, }, fetch: undefined};
 
       
 
@@ -483,7 +673,7 @@ const {mutation: mutationOptions, axios: axiosOptions} = options ?
       const mutationFn: MutationFunction<Awaited<ReturnType<typeof postPostsApi>>, {data: CreatePost}> = (props) => {
           const {data} = props ?? {};
 
-          return  postPostsApi(data,axiosOptions)
+          return  postPostsApi(data,fetchOptions)
         }
 
         
@@ -493,13 +683,13 @@ const {mutation: mutationOptions, axios: axiosOptions} = options ?
 
     export type PostPostsApiMutationResult = NonNullable<Awaited<ReturnType<typeof postPostsApi>>>
     export type PostPostsApiMutationBody = CreatePost
-    export type PostPostsApiMutationError = AxiosError<ErrorResponse>
+    export type PostPostsApiMutationError = ErrorResponse
 
     /**
  * @summary 新規投稿を作成
  */
-export const usePostPostsApi = <TError = AxiosError<ErrorResponse>,
-    TContext = unknown>(options?: { mutation?:UseMutationOptions<Awaited<ReturnType<typeof postPostsApi>>, TError,{data: CreatePost}, TContext>, axios?: AxiosRequestConfig}
+export const usePostPostsApi = <TError = ErrorResponse,
+    TContext = unknown>(options?: { mutation?:UseMutationOptions<Awaited<ReturnType<typeof postPostsApi>>, TError,{data: CreatePost}, TContext>, fetch?: RequestInit}
  , queryClient?: QueryClient): UseMutationResult<
         Awaited<ReturnType<typeof postPostsApi>>,
         TError,
@@ -516,32 +706,64 @@ export const usePostPostsApi = <TError = AxiosError<ErrorResponse>,
  * 指定されたIDの投稿情報を取得します
  * @summary 特定の投稿を取得
  */
-export const getPostsByIdApi = (
-    id: string, options?: AxiosRequestConfig
- ): Promise<AxiosResponse<GetPostsByIdApi200>> => {
+export type getPostsByIdApiResponse200 = {
+  data: GetPostsByIdApi200
+  status: 200
+}
+
+export type getPostsByIdApiResponse400 = {
+  data: ErrorResponse
+  status: 400
+}
+    
+export type getPostsByIdApiResponseComposite = getPostsByIdApiResponse200 | getPostsByIdApiResponse400;
+    
+export type getPostsByIdApiResponse = getPostsByIdApiResponseComposite & {
+  headers: Headers;
+}
+
+export const getGetPostsByIdApiUrl = (id: string,) => {
+
+
+  
+
+  return `http://localhost:4010/api/posts/${id}`
+}
+
+export const getPostsByIdApi = async (id: string, options?: RequestInit): Promise<getPostsByIdApiResponse> => {
+  
+  const res = await fetch(getGetPostsByIdApiUrl(id),
+  {      
+    ...options,
+    method: 'GET'
     
     
-    return axios.get(
-      `/api/posts/${id}`,options
-    );
   }
+)
+
+  const body = [204, 205, 304].includes(res.status) ? null : await res.text()
+  const data: getPostsByIdApiResponse['data'] = body ? JSON.parse(body) : {}
+
+  return { data, status: res.status, headers: res.headers } as getPostsByIdApiResponse
+}
+
 
 
 export const getGetPostsByIdApiQueryKey = (id: string,) => {
-    return [`/api/posts/${id}`] as const;
+    return [`http://localhost:4010/api/posts/${id}`] as const;
     }
 
     
-export const getGetPostsByIdApiQueryOptions = <TData = Awaited<ReturnType<typeof getPostsByIdApi>>, TError = AxiosError<ErrorResponse>>(id: string, options?: { query?:Partial<UseQueryOptions<Awaited<ReturnType<typeof getPostsByIdApi>>, TError, TData>>, axios?: AxiosRequestConfig}
+export const getGetPostsByIdApiQueryOptions = <TData = Awaited<ReturnType<typeof getPostsByIdApi>>, TError = ErrorResponse>(id: string, options?: { query?:Partial<UseQueryOptions<Awaited<ReturnType<typeof getPostsByIdApi>>, TError, TData>>, fetch?: RequestInit}
 ) => {
 
-const {query: queryOptions, axios: axiosOptions} = options ?? {};
+const {query: queryOptions, fetch: fetchOptions} = options ?? {};
 
   const queryKey =  queryOptions?.queryKey ?? getGetPostsByIdApiQueryKey(id);
 
   
 
-    const queryFn: QueryFunction<Awaited<ReturnType<typeof getPostsByIdApi>>> = ({ signal }) => getPostsByIdApi(id, { signal, ...axiosOptions });
+    const queryFn: QueryFunction<Awaited<ReturnType<typeof getPostsByIdApi>>> = ({ signal }) => getPostsByIdApi(id, { signal, ...fetchOptions });
 
       
 
@@ -551,39 +773,39 @@ const {query: queryOptions, axios: axiosOptions} = options ?? {};
 }
 
 export type GetPostsByIdApiQueryResult = NonNullable<Awaited<ReturnType<typeof getPostsByIdApi>>>
-export type GetPostsByIdApiQueryError = AxiosError<ErrorResponse>
+export type GetPostsByIdApiQueryError = ErrorResponse
 
 
-export function useGetPostsByIdApi<TData = Awaited<ReturnType<typeof getPostsByIdApi>>, TError = AxiosError<ErrorResponse>>(
+export function useGetPostsByIdApi<TData = Awaited<ReturnType<typeof getPostsByIdApi>>, TError = ErrorResponse>(
  id: string, options: { query:Partial<UseQueryOptions<Awaited<ReturnType<typeof getPostsByIdApi>>, TError, TData>> & Pick<
         DefinedInitialDataOptions<
           Awaited<ReturnType<typeof getPostsByIdApi>>,
           TError,
           Awaited<ReturnType<typeof getPostsByIdApi>>
         > , 'initialData'
-      >, axios?: AxiosRequestConfig}
+      >, fetch?: RequestInit}
  , queryClient?: QueryClient
   ):  DefinedUseQueryResult<TData, TError> & { queryKey: DataTag<QueryKey, TData, TError> }
-export function useGetPostsByIdApi<TData = Awaited<ReturnType<typeof getPostsByIdApi>>, TError = AxiosError<ErrorResponse>>(
+export function useGetPostsByIdApi<TData = Awaited<ReturnType<typeof getPostsByIdApi>>, TError = ErrorResponse>(
  id: string, options?: { query?:Partial<UseQueryOptions<Awaited<ReturnType<typeof getPostsByIdApi>>, TError, TData>> & Pick<
         UndefinedInitialDataOptions<
           Awaited<ReturnType<typeof getPostsByIdApi>>,
           TError,
           Awaited<ReturnType<typeof getPostsByIdApi>>
         > , 'initialData'
-      >, axios?: AxiosRequestConfig}
+      >, fetch?: RequestInit}
  , queryClient?: QueryClient
   ):  UseQueryResult<TData, TError> & { queryKey: DataTag<QueryKey, TData, TError> }
-export function useGetPostsByIdApi<TData = Awaited<ReturnType<typeof getPostsByIdApi>>, TError = AxiosError<ErrorResponse>>(
- id: string, options?: { query?:Partial<UseQueryOptions<Awaited<ReturnType<typeof getPostsByIdApi>>, TError, TData>>, axios?: AxiosRequestConfig}
+export function useGetPostsByIdApi<TData = Awaited<ReturnType<typeof getPostsByIdApi>>, TError = ErrorResponse>(
+ id: string, options?: { query?:Partial<UseQueryOptions<Awaited<ReturnType<typeof getPostsByIdApi>>, TError, TData>>, fetch?: RequestInit}
  , queryClient?: QueryClient
   ):  UseQueryResult<TData, TError> & { queryKey: DataTag<QueryKey, TData, TError> }
 /**
  * @summary 特定の投稿を取得
  */
 
-export function useGetPostsByIdApi<TData = Awaited<ReturnType<typeof getPostsByIdApi>>, TError = AxiosError<ErrorResponse>>(
- id: string, options?: { query?:Partial<UseQueryOptions<Awaited<ReturnType<typeof getPostsByIdApi>>, TError, TData>>, axios?: AxiosRequestConfig}
+export function useGetPostsByIdApi<TData = Awaited<ReturnType<typeof getPostsByIdApi>>, TError = ErrorResponse>(
+ id: string, options?: { query?:Partial<UseQueryOptions<Awaited<ReturnType<typeof getPostsByIdApi>>, TError, TData>>, fetch?: RequestInit}
  , queryClient?: QueryClient 
  ):  UseQueryResult<TData, TError> & { queryKey: DataTag<QueryKey, TData, TError> } {
 
@@ -603,30 +825,62 @@ export function useGetPostsByIdApi<TData = Awaited<ReturnType<typeof getPostsByI
  * 指定されたIDの投稿を更新します
  * @summary 投稿を更新
  */
-export const putPostsByIdApi = (
-    id: string,
-    updatePost: UpdatePost, options?: AxiosRequestConfig
- ): Promise<AxiosResponse<PutPostsByIdApi200>> => {
+export type putPostsByIdApiResponse200 = {
+  data: PutPostsByIdApi200
+  status: 200
+}
+
+export type putPostsByIdApiResponse400 = {
+  data: ErrorResponse
+  status: 400
+}
     
+export type putPostsByIdApiResponseComposite = putPostsByIdApiResponse200 | putPostsByIdApiResponse400;
     
-    return axios.put(
-      `/api/posts/${id}`,
-      updatePost,options
-    );
+export type putPostsByIdApiResponse = putPostsByIdApiResponseComposite & {
+  headers: Headers;
+}
+
+export const getPutPostsByIdApiUrl = (id: string,) => {
+
+
+  
+
+  return `http://localhost:4010/api/posts/${id}`
+}
+
+export const putPostsByIdApi = async (id: string,
+    updatePost: UpdatePost, options?: RequestInit): Promise<putPostsByIdApiResponse> => {
+  
+  const res = await fetch(getPutPostsByIdApiUrl(id),
+  {      
+    ...options,
+    method: 'PUT',
+    headers: { 'Content-Type': 'application/json', ...options?.headers },
+    body: JSON.stringify(
+      updatePost,)
   }
+)
+
+  const body = [204, 205, 304].includes(res.status) ? null : await res.text()
+  const data: putPostsByIdApiResponse['data'] = body ? JSON.parse(body) : {}
+
+  return { data, status: res.status, headers: res.headers } as putPostsByIdApiResponse
+}
 
 
 
-export const getPutPostsByIdApiMutationOptions = <TError = AxiosError<ErrorResponse>,
-    TContext = unknown>(options?: { mutation?:UseMutationOptions<Awaited<ReturnType<typeof putPostsByIdApi>>, TError,{id: string;data: UpdatePost}, TContext>, axios?: AxiosRequestConfig}
+
+export const getPutPostsByIdApiMutationOptions = <TError = ErrorResponse,
+    TContext = unknown>(options?: { mutation?:UseMutationOptions<Awaited<ReturnType<typeof putPostsByIdApi>>, TError,{id: string;data: UpdatePost}, TContext>, fetch?: RequestInit}
 ): UseMutationOptions<Awaited<ReturnType<typeof putPostsByIdApi>>, TError,{id: string;data: UpdatePost}, TContext> => {
 
 const mutationKey = ['putPostsByIdApi'];
-const {mutation: mutationOptions, axios: axiosOptions} = options ?
+const {mutation: mutationOptions, fetch: fetchOptions} = options ?
       options.mutation && 'mutationKey' in options.mutation && options.mutation.mutationKey ?
       options
       : {...options, mutation: {...options.mutation, mutationKey}}
-      : {mutation: { mutationKey, }, axios: undefined};
+      : {mutation: { mutationKey, }, fetch: undefined};
 
       
 
@@ -634,7 +888,7 @@ const {mutation: mutationOptions, axios: axiosOptions} = options ?
       const mutationFn: MutationFunction<Awaited<ReturnType<typeof putPostsByIdApi>>, {id: string;data: UpdatePost}> = (props) => {
           const {id,data} = props ?? {};
 
-          return  putPostsByIdApi(id,data,axiosOptions)
+          return  putPostsByIdApi(id,data,fetchOptions)
         }
 
         
@@ -644,13 +898,13 @@ const {mutation: mutationOptions, axios: axiosOptions} = options ?
 
     export type PutPostsByIdApiMutationResult = NonNullable<Awaited<ReturnType<typeof putPostsByIdApi>>>
     export type PutPostsByIdApiMutationBody = UpdatePost
-    export type PutPostsByIdApiMutationError = AxiosError<ErrorResponse>
+    export type PutPostsByIdApiMutationError = ErrorResponse
 
     /**
  * @summary 投稿を更新
  */
-export const usePutPostsByIdApi = <TError = AxiosError<ErrorResponse>,
-    TContext = unknown>(options?: { mutation?:UseMutationOptions<Awaited<ReturnType<typeof putPostsByIdApi>>, TError,{id: string;data: UpdatePost}, TContext>, axios?: AxiosRequestConfig}
+export const usePutPostsByIdApi = <TError = ErrorResponse,
+    TContext = unknown>(options?: { mutation?:UseMutationOptions<Awaited<ReturnType<typeof putPostsByIdApi>>, TError,{id: string;data: UpdatePost}, TContext>, fetch?: RequestInit}
  , queryClient?: QueryClient): UseMutationResult<
         Awaited<ReturnType<typeof putPostsByIdApi>>,
         TError,
@@ -667,28 +921,60 @@ export const usePutPostsByIdApi = <TError = AxiosError<ErrorResponse>,
  * 指定されたIDの投稿を削除します
  * @summary 投稿を削除
  */
-export const deletePostsByIdApi = (
-    id: string, options?: AxiosRequestConfig
- ): Promise<AxiosResponse<void>> => {
+export type deletePostsByIdApiResponse204 = {
+  data: void
+  status: 204
+}
+
+export type deletePostsByIdApiResponse400 = {
+  data: ErrorResponse
+  status: 400
+}
+    
+export type deletePostsByIdApiResponseComposite = deletePostsByIdApiResponse204 | deletePostsByIdApiResponse400;
+    
+export type deletePostsByIdApiResponse = deletePostsByIdApiResponseComposite & {
+  headers: Headers;
+}
+
+export const getDeletePostsByIdApiUrl = (id: string,) => {
+
+
+  
+
+  return `http://localhost:4010/api/posts/${id}`
+}
+
+export const deletePostsByIdApi = async (id: string, options?: RequestInit): Promise<deletePostsByIdApiResponse> => {
+  
+  const res = await fetch(getDeletePostsByIdApiUrl(id),
+  {      
+    ...options,
+    method: 'DELETE'
     
     
-    return axios.delete(
-      `/api/posts/${id}`,options
-    );
   }
+)
+
+  const body = [204, 205, 304].includes(res.status) ? null : await res.text()
+  const data: deletePostsByIdApiResponse['data'] = body ? JSON.parse(body) : {}
+
+  return { data, status: res.status, headers: res.headers } as deletePostsByIdApiResponse
+}
 
 
 
-export const getDeletePostsByIdApiMutationOptions = <TError = AxiosError<ErrorResponse>,
-    TContext = unknown>(options?: { mutation?:UseMutationOptions<Awaited<ReturnType<typeof deletePostsByIdApi>>, TError,{id: string}, TContext>, axios?: AxiosRequestConfig}
+
+export const getDeletePostsByIdApiMutationOptions = <TError = ErrorResponse,
+    TContext = unknown>(options?: { mutation?:UseMutationOptions<Awaited<ReturnType<typeof deletePostsByIdApi>>, TError,{id: string}, TContext>, fetch?: RequestInit}
 ): UseMutationOptions<Awaited<ReturnType<typeof deletePostsByIdApi>>, TError,{id: string}, TContext> => {
 
 const mutationKey = ['deletePostsByIdApi'];
-const {mutation: mutationOptions, axios: axiosOptions} = options ?
+const {mutation: mutationOptions, fetch: fetchOptions} = options ?
       options.mutation && 'mutationKey' in options.mutation && options.mutation.mutationKey ?
       options
       : {...options, mutation: {...options.mutation, mutationKey}}
-      : {mutation: { mutationKey, }, axios: undefined};
+      : {mutation: { mutationKey, }, fetch: undefined};
 
       
 
@@ -696,7 +982,7 @@ const {mutation: mutationOptions, axios: axiosOptions} = options ?
       const mutationFn: MutationFunction<Awaited<ReturnType<typeof deletePostsByIdApi>>, {id: string}> = (props) => {
           const {id} = props ?? {};
 
-          return  deletePostsByIdApi(id,axiosOptions)
+          return  deletePostsByIdApi(id,fetchOptions)
         }
 
         
@@ -706,13 +992,13 @@ const {mutation: mutationOptions, axios: axiosOptions} = options ?
 
     export type DeletePostsByIdApiMutationResult = NonNullable<Awaited<ReturnType<typeof deletePostsByIdApi>>>
     
-    export type DeletePostsByIdApiMutationError = AxiosError<ErrorResponse>
+    export type DeletePostsByIdApiMutationError = ErrorResponse
 
     /**
  * @summary 投稿を削除
  */
-export const useDeletePostsByIdApi = <TError = AxiosError<ErrorResponse>,
-    TContext = unknown>(options?: { mutation?:UseMutationOptions<Awaited<ReturnType<typeof deletePostsByIdApi>>, TError,{id: string}, TContext>, axios?: AxiosRequestConfig}
+export const useDeletePostsByIdApi = <TError = ErrorResponse,
+    TContext = unknown>(options?: { mutation?:UseMutationOptions<Awaited<ReturnType<typeof deletePostsByIdApi>>, TError,{id: string}, TContext>, fetch?: RequestInit}
  , queryClient?: QueryClient): UseMutationResult<
         Awaited<ReturnType<typeof deletePostsByIdApi>>,
         TError,
@@ -729,32 +1015,64 @@ export const useDeletePostsByIdApi = <TError = AxiosError<ErrorResponse>,
  * システムに登録されているすべてのタグを取得します
  * @summary 全タグを取得
  */
-export const getTagsApi = (
-     options?: AxiosRequestConfig
- ): Promise<AxiosResponse<GetTagsApi200>> => {
+export type getTagsApiResponse200 = {
+  data: GetTagsApi200
+  status: 200
+}
+
+export type getTagsApiResponse400 = {
+  data: ErrorResponse
+  status: 400
+}
+    
+export type getTagsApiResponseComposite = getTagsApiResponse200 | getTagsApiResponse400;
+    
+export type getTagsApiResponse = getTagsApiResponseComposite & {
+  headers: Headers;
+}
+
+export const getGetTagsApiUrl = () => {
+
+
+  
+
+  return `http://localhost:4010/api/tags`
+}
+
+export const getTagsApi = async ( options?: RequestInit): Promise<getTagsApiResponse> => {
+  
+  const res = await fetch(getGetTagsApiUrl(),
+  {      
+    ...options,
+    method: 'GET'
     
     
-    return axios.get(
-      `/api/tags`,options
-    );
   }
+)
+
+  const body = [204, 205, 304].includes(res.status) ? null : await res.text()
+  const data: getTagsApiResponse['data'] = body ? JSON.parse(body) : {}
+
+  return { data, status: res.status, headers: res.headers } as getTagsApiResponse
+}
+
 
 
 export const getGetTagsApiQueryKey = () => {
-    return [`/api/tags`] as const;
+    return [`http://localhost:4010/api/tags`] as const;
     }
 
     
-export const getGetTagsApiQueryOptions = <TData = Awaited<ReturnType<typeof getTagsApi>>, TError = AxiosError<ErrorResponse>>( options?: { query?:Partial<UseQueryOptions<Awaited<ReturnType<typeof getTagsApi>>, TError, TData>>, axios?: AxiosRequestConfig}
+export const getGetTagsApiQueryOptions = <TData = Awaited<ReturnType<typeof getTagsApi>>, TError = ErrorResponse>( options?: { query?:Partial<UseQueryOptions<Awaited<ReturnType<typeof getTagsApi>>, TError, TData>>, fetch?: RequestInit}
 ) => {
 
-const {query: queryOptions, axios: axiosOptions} = options ?? {};
+const {query: queryOptions, fetch: fetchOptions} = options ?? {};
 
   const queryKey =  queryOptions?.queryKey ?? getGetTagsApiQueryKey();
 
   
 
-    const queryFn: QueryFunction<Awaited<ReturnType<typeof getTagsApi>>> = ({ signal }) => getTagsApi({ signal, ...axiosOptions });
+    const queryFn: QueryFunction<Awaited<ReturnType<typeof getTagsApi>>> = ({ signal }) => getTagsApi({ signal, ...fetchOptions });
 
       
 
@@ -764,39 +1082,39 @@ const {query: queryOptions, axios: axiosOptions} = options ?? {};
 }
 
 export type GetTagsApiQueryResult = NonNullable<Awaited<ReturnType<typeof getTagsApi>>>
-export type GetTagsApiQueryError = AxiosError<ErrorResponse>
+export type GetTagsApiQueryError = ErrorResponse
 
 
-export function useGetTagsApi<TData = Awaited<ReturnType<typeof getTagsApi>>, TError = AxiosError<ErrorResponse>>(
+export function useGetTagsApi<TData = Awaited<ReturnType<typeof getTagsApi>>, TError = ErrorResponse>(
   options: { query:Partial<UseQueryOptions<Awaited<ReturnType<typeof getTagsApi>>, TError, TData>> & Pick<
         DefinedInitialDataOptions<
           Awaited<ReturnType<typeof getTagsApi>>,
           TError,
           Awaited<ReturnType<typeof getTagsApi>>
         > , 'initialData'
-      >, axios?: AxiosRequestConfig}
+      >, fetch?: RequestInit}
  , queryClient?: QueryClient
   ):  DefinedUseQueryResult<TData, TError> & { queryKey: DataTag<QueryKey, TData, TError> }
-export function useGetTagsApi<TData = Awaited<ReturnType<typeof getTagsApi>>, TError = AxiosError<ErrorResponse>>(
+export function useGetTagsApi<TData = Awaited<ReturnType<typeof getTagsApi>>, TError = ErrorResponse>(
   options?: { query?:Partial<UseQueryOptions<Awaited<ReturnType<typeof getTagsApi>>, TError, TData>> & Pick<
         UndefinedInitialDataOptions<
           Awaited<ReturnType<typeof getTagsApi>>,
           TError,
           Awaited<ReturnType<typeof getTagsApi>>
         > , 'initialData'
-      >, axios?: AxiosRequestConfig}
+      >, fetch?: RequestInit}
  , queryClient?: QueryClient
   ):  UseQueryResult<TData, TError> & { queryKey: DataTag<QueryKey, TData, TError> }
-export function useGetTagsApi<TData = Awaited<ReturnType<typeof getTagsApi>>, TError = AxiosError<ErrorResponse>>(
-  options?: { query?:Partial<UseQueryOptions<Awaited<ReturnType<typeof getTagsApi>>, TError, TData>>, axios?: AxiosRequestConfig}
+export function useGetTagsApi<TData = Awaited<ReturnType<typeof getTagsApi>>, TError = ErrorResponse>(
+  options?: { query?:Partial<UseQueryOptions<Awaited<ReturnType<typeof getTagsApi>>, TError, TData>>, fetch?: RequestInit}
  , queryClient?: QueryClient
   ):  UseQueryResult<TData, TError> & { queryKey: DataTag<QueryKey, TData, TError> }
 /**
  * @summary 全タグを取得
  */
 
-export function useGetTagsApi<TData = Awaited<ReturnType<typeof getTagsApi>>, TError = AxiosError<ErrorResponse>>(
-  options?: { query?:Partial<UseQueryOptions<Awaited<ReturnType<typeof getTagsApi>>, TError, TData>>, axios?: AxiosRequestConfig}
+export function useGetTagsApi<TData = Awaited<ReturnType<typeof getTagsApi>>, TError = ErrorResponse>(
+  options?: { query?:Partial<UseQueryOptions<Awaited<ReturnType<typeof getTagsApi>>, TError, TData>>, fetch?: RequestInit}
  , queryClient?: QueryClient 
  ):  UseQueryResult<TData, TError> & { queryKey: DataTag<QueryKey, TData, TError> } {
 
@@ -816,29 +1134,61 @@ export function useGetTagsApi<TData = Awaited<ReturnType<typeof getTagsApi>>, TE
  * 新しいタグをシステムに登録します
  * @summary 新規タグを作成
  */
-export const postTagsApi = (
-    createTag: CreateTag, options?: AxiosRequestConfig
- ): Promise<AxiosResponse<PostTagsApi201>> => {
+export type postTagsApiResponse201 = {
+  data: PostTagsApi201
+  status: 201
+}
+
+export type postTagsApiResponse400 = {
+  data: ErrorResponse
+  status: 400
+}
     
+export type postTagsApiResponseComposite = postTagsApiResponse201 | postTagsApiResponse400;
     
-    return axios.post(
-      `/api/tags`,
-      createTag,options
-    );
+export type postTagsApiResponse = postTagsApiResponseComposite & {
+  headers: Headers;
+}
+
+export const getPostTagsApiUrl = () => {
+
+
+  
+
+  return `http://localhost:4010/api/tags`
+}
+
+export const postTagsApi = async (createTag: CreateTag, options?: RequestInit): Promise<postTagsApiResponse> => {
+  
+  const res = await fetch(getPostTagsApiUrl(),
+  {      
+    ...options,
+    method: 'POST',
+    headers: { 'Content-Type': 'application/json', ...options?.headers },
+    body: JSON.stringify(
+      createTag,)
   }
+)
+
+  const body = [204, 205, 304].includes(res.status) ? null : await res.text()
+  const data: postTagsApiResponse['data'] = body ? JSON.parse(body) : {}
+
+  return { data, status: res.status, headers: res.headers } as postTagsApiResponse
+}
 
 
 
-export const getPostTagsApiMutationOptions = <TError = AxiosError<ErrorResponse>,
-    TContext = unknown>(options?: { mutation?:UseMutationOptions<Awaited<ReturnType<typeof postTagsApi>>, TError,{data: CreateTag}, TContext>, axios?: AxiosRequestConfig}
+
+export const getPostTagsApiMutationOptions = <TError = ErrorResponse,
+    TContext = unknown>(options?: { mutation?:UseMutationOptions<Awaited<ReturnType<typeof postTagsApi>>, TError,{data: CreateTag}, TContext>, fetch?: RequestInit}
 ): UseMutationOptions<Awaited<ReturnType<typeof postTagsApi>>, TError,{data: CreateTag}, TContext> => {
 
 const mutationKey = ['postTagsApi'];
-const {mutation: mutationOptions, axios: axiosOptions} = options ?
+const {mutation: mutationOptions, fetch: fetchOptions} = options ?
       options.mutation && 'mutationKey' in options.mutation && options.mutation.mutationKey ?
       options
       : {...options, mutation: {...options.mutation, mutationKey}}
-      : {mutation: { mutationKey, }, axios: undefined};
+      : {mutation: { mutationKey, }, fetch: undefined};
 
       
 
@@ -846,7 +1196,7 @@ const {mutation: mutationOptions, axios: axiosOptions} = options ?
       const mutationFn: MutationFunction<Awaited<ReturnType<typeof postTagsApi>>, {data: CreateTag}> = (props) => {
           const {data} = props ?? {};
 
-          return  postTagsApi(data,axiosOptions)
+          return  postTagsApi(data,fetchOptions)
         }
 
         
@@ -856,13 +1206,13 @@ const {mutation: mutationOptions, axios: axiosOptions} = options ?
 
     export type PostTagsApiMutationResult = NonNullable<Awaited<ReturnType<typeof postTagsApi>>>
     export type PostTagsApiMutationBody = CreateTag
-    export type PostTagsApiMutationError = AxiosError<ErrorResponse>
+    export type PostTagsApiMutationError = ErrorResponse
 
     /**
  * @summary 新規タグを作成
  */
-export const usePostTagsApi = <TError = AxiosError<ErrorResponse>,
-    TContext = unknown>(options?: { mutation?:UseMutationOptions<Awaited<ReturnType<typeof postTagsApi>>, TError,{data: CreateTag}, TContext>, axios?: AxiosRequestConfig}
+export const usePostTagsApi = <TError = ErrorResponse,
+    TContext = unknown>(options?: { mutation?:UseMutationOptions<Awaited<ReturnType<typeof postTagsApi>>, TError,{data: CreateTag}, TContext>, fetch?: RequestInit}
  , queryClient?: QueryClient): UseMutationResult<
         Awaited<ReturnType<typeof postTagsApi>>,
         TError,
@@ -879,32 +1229,64 @@ export const usePostTagsApi = <TError = AxiosError<ErrorResponse>,
  * 指定されたIDのタグ情報を取得します
  * @summary 特定のタグを取得
  */
-export const getTagsByIdApi = (
-    id: string, options?: AxiosRequestConfig
- ): Promise<AxiosResponse<GetTagsByIdApi200>> => {
+export type getTagsByIdApiResponse200 = {
+  data: GetTagsByIdApi200
+  status: 200
+}
+
+export type getTagsByIdApiResponse400 = {
+  data: ErrorResponse
+  status: 400
+}
+    
+export type getTagsByIdApiResponseComposite = getTagsByIdApiResponse200 | getTagsByIdApiResponse400;
+    
+export type getTagsByIdApiResponse = getTagsByIdApiResponseComposite & {
+  headers: Headers;
+}
+
+export const getGetTagsByIdApiUrl = (id: string,) => {
+
+
+  
+
+  return `http://localhost:4010/api/tags/${id}`
+}
+
+export const getTagsByIdApi = async (id: string, options?: RequestInit): Promise<getTagsByIdApiResponse> => {
+  
+  const res = await fetch(getGetTagsByIdApiUrl(id),
+  {      
+    ...options,
+    method: 'GET'
     
     
-    return axios.get(
-      `/api/tags/${id}`,options
-    );
   }
+)
+
+  const body = [204, 205, 304].includes(res.status) ? null : await res.text()
+  const data: getTagsByIdApiResponse['data'] = body ? JSON.parse(body) : {}
+
+  return { data, status: res.status, headers: res.headers } as getTagsByIdApiResponse
+}
+
 
 
 export const getGetTagsByIdApiQueryKey = (id: string,) => {
-    return [`/api/tags/${id}`] as const;
+    return [`http://localhost:4010/api/tags/${id}`] as const;
     }
 
     
-export const getGetTagsByIdApiQueryOptions = <TData = Awaited<ReturnType<typeof getTagsByIdApi>>, TError = AxiosError<ErrorResponse>>(id: string, options?: { query?:Partial<UseQueryOptions<Awaited<ReturnType<typeof getTagsByIdApi>>, TError, TData>>, axios?: AxiosRequestConfig}
+export const getGetTagsByIdApiQueryOptions = <TData = Awaited<ReturnType<typeof getTagsByIdApi>>, TError = ErrorResponse>(id: string, options?: { query?:Partial<UseQueryOptions<Awaited<ReturnType<typeof getTagsByIdApi>>, TError, TData>>, fetch?: RequestInit}
 ) => {
 
-const {query: queryOptions, axios: axiosOptions} = options ?? {};
+const {query: queryOptions, fetch: fetchOptions} = options ?? {};
 
   const queryKey =  queryOptions?.queryKey ?? getGetTagsByIdApiQueryKey(id);
 
   
 
-    const queryFn: QueryFunction<Awaited<ReturnType<typeof getTagsByIdApi>>> = ({ signal }) => getTagsByIdApi(id, { signal, ...axiosOptions });
+    const queryFn: QueryFunction<Awaited<ReturnType<typeof getTagsByIdApi>>> = ({ signal }) => getTagsByIdApi(id, { signal, ...fetchOptions });
 
       
 
@@ -914,39 +1296,39 @@ const {query: queryOptions, axios: axiosOptions} = options ?? {};
 }
 
 export type GetTagsByIdApiQueryResult = NonNullable<Awaited<ReturnType<typeof getTagsByIdApi>>>
-export type GetTagsByIdApiQueryError = AxiosError<ErrorResponse>
+export type GetTagsByIdApiQueryError = ErrorResponse
 
 
-export function useGetTagsByIdApi<TData = Awaited<ReturnType<typeof getTagsByIdApi>>, TError = AxiosError<ErrorResponse>>(
+export function useGetTagsByIdApi<TData = Awaited<ReturnType<typeof getTagsByIdApi>>, TError = ErrorResponse>(
  id: string, options: { query:Partial<UseQueryOptions<Awaited<ReturnType<typeof getTagsByIdApi>>, TError, TData>> & Pick<
         DefinedInitialDataOptions<
           Awaited<ReturnType<typeof getTagsByIdApi>>,
           TError,
           Awaited<ReturnType<typeof getTagsByIdApi>>
         > , 'initialData'
-      >, axios?: AxiosRequestConfig}
+      >, fetch?: RequestInit}
  , queryClient?: QueryClient
   ):  DefinedUseQueryResult<TData, TError> & { queryKey: DataTag<QueryKey, TData, TError> }
-export function useGetTagsByIdApi<TData = Awaited<ReturnType<typeof getTagsByIdApi>>, TError = AxiosError<ErrorResponse>>(
+export function useGetTagsByIdApi<TData = Awaited<ReturnType<typeof getTagsByIdApi>>, TError = ErrorResponse>(
  id: string, options?: { query?:Partial<UseQueryOptions<Awaited<ReturnType<typeof getTagsByIdApi>>, TError, TData>> & Pick<
         UndefinedInitialDataOptions<
           Awaited<ReturnType<typeof getTagsByIdApi>>,
           TError,
           Awaited<ReturnType<typeof getTagsByIdApi>>
         > , 'initialData'
-      >, axios?: AxiosRequestConfig}
+      >, fetch?: RequestInit}
  , queryClient?: QueryClient
   ):  UseQueryResult<TData, TError> & { queryKey: DataTag<QueryKey, TData, TError> }
-export function useGetTagsByIdApi<TData = Awaited<ReturnType<typeof getTagsByIdApi>>, TError = AxiosError<ErrorResponse>>(
- id: string, options?: { query?:Partial<UseQueryOptions<Awaited<ReturnType<typeof getTagsByIdApi>>, TError, TData>>, axios?: AxiosRequestConfig}
+export function useGetTagsByIdApi<TData = Awaited<ReturnType<typeof getTagsByIdApi>>, TError = ErrorResponse>(
+ id: string, options?: { query?:Partial<UseQueryOptions<Awaited<ReturnType<typeof getTagsByIdApi>>, TError, TData>>, fetch?: RequestInit}
  , queryClient?: QueryClient
   ):  UseQueryResult<TData, TError> & { queryKey: DataTag<QueryKey, TData, TError> }
 /**
  * @summary 特定のタグを取得
  */
 
-export function useGetTagsByIdApi<TData = Awaited<ReturnType<typeof getTagsByIdApi>>, TError = AxiosError<ErrorResponse>>(
- id: string, options?: { query?:Partial<UseQueryOptions<Awaited<ReturnType<typeof getTagsByIdApi>>, TError, TData>>, axios?: AxiosRequestConfig}
+export function useGetTagsByIdApi<TData = Awaited<ReturnType<typeof getTagsByIdApi>>, TError = ErrorResponse>(
+ id: string, options?: { query?:Partial<UseQueryOptions<Awaited<ReturnType<typeof getTagsByIdApi>>, TError, TData>>, fetch?: RequestInit}
  , queryClient?: QueryClient 
  ):  UseQueryResult<TData, TError> & { queryKey: DataTag<QueryKey, TData, TError> } {
 
@@ -966,28 +1348,60 @@ export function useGetTagsByIdApi<TData = Awaited<ReturnType<typeof getTagsByIdA
  * 指定されたIDのタグを削除します
  * @summary タグを削除
  */
-export const deleteTagsByIdApi = (
-    id: string, options?: AxiosRequestConfig
- ): Promise<AxiosResponse<void>> => {
+export type deleteTagsByIdApiResponse204 = {
+  data: void
+  status: 204
+}
+
+export type deleteTagsByIdApiResponse400 = {
+  data: ErrorResponse
+  status: 400
+}
+    
+export type deleteTagsByIdApiResponseComposite = deleteTagsByIdApiResponse204 | deleteTagsByIdApiResponse400;
+    
+export type deleteTagsByIdApiResponse = deleteTagsByIdApiResponseComposite & {
+  headers: Headers;
+}
+
+export const getDeleteTagsByIdApiUrl = (id: string,) => {
+
+
+  
+
+  return `http://localhost:4010/api/tags/${id}`
+}
+
+export const deleteTagsByIdApi = async (id: string, options?: RequestInit): Promise<deleteTagsByIdApiResponse> => {
+  
+  const res = await fetch(getDeleteTagsByIdApiUrl(id),
+  {      
+    ...options,
+    method: 'DELETE'
     
     
-    return axios.delete(
-      `/api/tags/${id}`,options
-    );
   }
+)
+
+  const body = [204, 205, 304].includes(res.status) ? null : await res.text()
+  const data: deleteTagsByIdApiResponse['data'] = body ? JSON.parse(body) : {}
+
+  return { data, status: res.status, headers: res.headers } as deleteTagsByIdApiResponse
+}
 
 
 
-export const getDeleteTagsByIdApiMutationOptions = <TError = AxiosError<ErrorResponse>,
-    TContext = unknown>(options?: { mutation?:UseMutationOptions<Awaited<ReturnType<typeof deleteTagsByIdApi>>, TError,{id: string}, TContext>, axios?: AxiosRequestConfig}
+
+export const getDeleteTagsByIdApiMutationOptions = <TError = ErrorResponse,
+    TContext = unknown>(options?: { mutation?:UseMutationOptions<Awaited<ReturnType<typeof deleteTagsByIdApi>>, TError,{id: string}, TContext>, fetch?: RequestInit}
 ): UseMutationOptions<Awaited<ReturnType<typeof deleteTagsByIdApi>>, TError,{id: string}, TContext> => {
 
 const mutationKey = ['deleteTagsByIdApi'];
-const {mutation: mutationOptions, axios: axiosOptions} = options ?
+const {mutation: mutationOptions, fetch: fetchOptions} = options ?
       options.mutation && 'mutationKey' in options.mutation && options.mutation.mutationKey ?
       options
       : {...options, mutation: {...options.mutation, mutationKey}}
-      : {mutation: { mutationKey, }, axios: undefined};
+      : {mutation: { mutationKey, }, fetch: undefined};
 
       
 
@@ -995,7 +1409,7 @@ const {mutation: mutationOptions, axios: axiosOptions} = options ?
       const mutationFn: MutationFunction<Awaited<ReturnType<typeof deleteTagsByIdApi>>, {id: string}> = (props) => {
           const {id} = props ?? {};
 
-          return  deleteTagsByIdApi(id,axiosOptions)
+          return  deleteTagsByIdApi(id,fetchOptions)
         }
 
         
@@ -1005,13 +1419,13 @@ const {mutation: mutationOptions, axios: axiosOptions} = options ?
 
     export type DeleteTagsByIdApiMutationResult = NonNullable<Awaited<ReturnType<typeof deleteTagsByIdApi>>>
     
-    export type DeleteTagsByIdApiMutationError = AxiosError<ErrorResponse>
+    export type DeleteTagsByIdApiMutationError = ErrorResponse
 
     /**
  * @summary タグを削除
  */
-export const useDeleteTagsByIdApi = <TError = AxiosError<ErrorResponse>,
-    TContext = unknown>(options?: { mutation?:UseMutationOptions<Awaited<ReturnType<typeof deleteTagsByIdApi>>, TError,{id: string}, TContext>, axios?: AxiosRequestConfig}
+export const useDeleteTagsByIdApi = <TError = ErrorResponse,
+    TContext = unknown>(options?: { mutation?:UseMutationOptions<Awaited<ReturnType<typeof deleteTagsByIdApi>>, TError,{id: string}, TContext>, fetch?: RequestInit}
  , queryClient?: QueryClient): UseMutationResult<
         Awaited<ReturnType<typeof deleteTagsByIdApi>>,
         TError,
@@ -1028,34 +1442,71 @@ export const useDeleteTagsByIdApi = <TError = AxiosError<ErrorResponse>,
  * 指定された投稿IDに関連するすべてのコメントを取得します
  * @summary 特定の投稿のコメントを取得
  */
-export const getCommentsApi = (
-    params: GetCommentsApiParams, options?: AxiosRequestConfig
- ): Promise<AxiosResponse<GetCommentsApi200>> => {
+export type getCommentsApiResponse200 = {
+  data: GetCommentsApi200
+  status: 200
+}
+
+export type getCommentsApiResponse400 = {
+  data: ErrorResponse
+  status: 400
+}
     
+export type getCommentsApiResponseComposite = getCommentsApiResponse200 | getCommentsApiResponse400;
     
-    return axios.get(
-      `/api/comments`,{
+export type getCommentsApiResponse = getCommentsApiResponseComposite & {
+  headers: Headers;
+}
+
+export const getGetCommentsApiUrl = (params: GetCommentsApiParams,) => {
+  const normalizedParams = new URLSearchParams();
+
+  Object.entries(params || {}).forEach(([key, value]) => {
+    
+    if (value !== undefined) {
+      normalizedParams.append(key, value === null ? 'null' : value.toString())
+    }
+  });
+
+  const stringifiedParams = normalizedParams.toString();
+
+  return stringifiedParams.length > 0 ? `http://localhost:4010/api/comments?${stringifiedParams}` : `http://localhost:4010/api/comments`
+}
+
+export const getCommentsApi = async (params: GetCommentsApiParams, options?: RequestInit): Promise<getCommentsApiResponse> => {
+  
+  const res = await fetch(getGetCommentsApiUrl(params),
+  {      
     ...options,
-        params: {...params, ...options?.params},}
-    );
+    method: 'GET'
+    
+    
   }
+)
+
+  const body = [204, 205, 304].includes(res.status) ? null : await res.text()
+  const data: getCommentsApiResponse['data'] = body ? JSON.parse(body) : {}
+
+  return { data, status: res.status, headers: res.headers } as getCommentsApiResponse
+}
+
 
 
 export const getGetCommentsApiQueryKey = (params: GetCommentsApiParams,) => {
-    return [`/api/comments`, ...(params ? [params]: [])] as const;
+    return [`http://localhost:4010/api/comments`, ...(params ? [params]: [])] as const;
     }
 
     
-export const getGetCommentsApiQueryOptions = <TData = Awaited<ReturnType<typeof getCommentsApi>>, TError = AxiosError<ErrorResponse>>(params: GetCommentsApiParams, options?: { query?:Partial<UseQueryOptions<Awaited<ReturnType<typeof getCommentsApi>>, TError, TData>>, axios?: AxiosRequestConfig}
+export const getGetCommentsApiQueryOptions = <TData = Awaited<ReturnType<typeof getCommentsApi>>, TError = ErrorResponse>(params: GetCommentsApiParams, options?: { query?:Partial<UseQueryOptions<Awaited<ReturnType<typeof getCommentsApi>>, TError, TData>>, fetch?: RequestInit}
 ) => {
 
-const {query: queryOptions, axios: axiosOptions} = options ?? {};
+const {query: queryOptions, fetch: fetchOptions} = options ?? {};
 
   const queryKey =  queryOptions?.queryKey ?? getGetCommentsApiQueryKey(params);
 
   
 
-    const queryFn: QueryFunction<Awaited<ReturnType<typeof getCommentsApi>>> = ({ signal }) => getCommentsApi(params, { signal, ...axiosOptions });
+    const queryFn: QueryFunction<Awaited<ReturnType<typeof getCommentsApi>>> = ({ signal }) => getCommentsApi(params, { signal, ...fetchOptions });
 
       
 
@@ -1065,39 +1516,39 @@ const {query: queryOptions, axios: axiosOptions} = options ?? {};
 }
 
 export type GetCommentsApiQueryResult = NonNullable<Awaited<ReturnType<typeof getCommentsApi>>>
-export type GetCommentsApiQueryError = AxiosError<ErrorResponse>
+export type GetCommentsApiQueryError = ErrorResponse
 
 
-export function useGetCommentsApi<TData = Awaited<ReturnType<typeof getCommentsApi>>, TError = AxiosError<ErrorResponse>>(
+export function useGetCommentsApi<TData = Awaited<ReturnType<typeof getCommentsApi>>, TError = ErrorResponse>(
  params: GetCommentsApiParams, options: { query:Partial<UseQueryOptions<Awaited<ReturnType<typeof getCommentsApi>>, TError, TData>> & Pick<
         DefinedInitialDataOptions<
           Awaited<ReturnType<typeof getCommentsApi>>,
           TError,
           Awaited<ReturnType<typeof getCommentsApi>>
         > , 'initialData'
-      >, axios?: AxiosRequestConfig}
+      >, fetch?: RequestInit}
  , queryClient?: QueryClient
   ):  DefinedUseQueryResult<TData, TError> & { queryKey: DataTag<QueryKey, TData, TError> }
-export function useGetCommentsApi<TData = Awaited<ReturnType<typeof getCommentsApi>>, TError = AxiosError<ErrorResponse>>(
+export function useGetCommentsApi<TData = Awaited<ReturnType<typeof getCommentsApi>>, TError = ErrorResponse>(
  params: GetCommentsApiParams, options?: { query?:Partial<UseQueryOptions<Awaited<ReturnType<typeof getCommentsApi>>, TError, TData>> & Pick<
         UndefinedInitialDataOptions<
           Awaited<ReturnType<typeof getCommentsApi>>,
           TError,
           Awaited<ReturnType<typeof getCommentsApi>>
         > , 'initialData'
-      >, axios?: AxiosRequestConfig}
+      >, fetch?: RequestInit}
  , queryClient?: QueryClient
   ):  UseQueryResult<TData, TError> & { queryKey: DataTag<QueryKey, TData, TError> }
-export function useGetCommentsApi<TData = Awaited<ReturnType<typeof getCommentsApi>>, TError = AxiosError<ErrorResponse>>(
- params: GetCommentsApiParams, options?: { query?:Partial<UseQueryOptions<Awaited<ReturnType<typeof getCommentsApi>>, TError, TData>>, axios?: AxiosRequestConfig}
+export function useGetCommentsApi<TData = Awaited<ReturnType<typeof getCommentsApi>>, TError = ErrorResponse>(
+ params: GetCommentsApiParams, options?: { query?:Partial<UseQueryOptions<Awaited<ReturnType<typeof getCommentsApi>>, TError, TData>>, fetch?: RequestInit}
  , queryClient?: QueryClient
   ):  UseQueryResult<TData, TError> & { queryKey: DataTag<QueryKey, TData, TError> }
 /**
  * @summary 特定の投稿のコメントを取得
  */
 
-export function useGetCommentsApi<TData = Awaited<ReturnType<typeof getCommentsApi>>, TError = AxiosError<ErrorResponse>>(
- params: GetCommentsApiParams, options?: { query?:Partial<UseQueryOptions<Awaited<ReturnType<typeof getCommentsApi>>, TError, TData>>, axios?: AxiosRequestConfig}
+export function useGetCommentsApi<TData = Awaited<ReturnType<typeof getCommentsApi>>, TError = ErrorResponse>(
+ params: GetCommentsApiParams, options?: { query?:Partial<UseQueryOptions<Awaited<ReturnType<typeof getCommentsApi>>, TError, TData>>, fetch?: RequestInit}
  , queryClient?: QueryClient 
  ):  UseQueryResult<TData, TError> & { queryKey: DataTag<QueryKey, TData, TError> } {
 
@@ -1117,29 +1568,61 @@ export function useGetCommentsApi<TData = Awaited<ReturnType<typeof getCommentsA
  * 新しいコメントをシステムに登録します
  * @summary 新規コメントを作成
  */
-export const postCommentsApi = (
-    createComment: CreateComment, options?: AxiosRequestConfig
- ): Promise<AxiosResponse<PostCommentsApi201>> => {
+export type postCommentsApiResponse201 = {
+  data: PostCommentsApi201
+  status: 201
+}
+
+export type postCommentsApiResponse400 = {
+  data: ErrorResponse
+  status: 400
+}
     
+export type postCommentsApiResponseComposite = postCommentsApiResponse201 | postCommentsApiResponse400;
     
-    return axios.post(
-      `/api/comments`,
-      createComment,options
-    );
+export type postCommentsApiResponse = postCommentsApiResponseComposite & {
+  headers: Headers;
+}
+
+export const getPostCommentsApiUrl = () => {
+
+
+  
+
+  return `http://localhost:4010/api/comments`
+}
+
+export const postCommentsApi = async (createComment: CreateComment, options?: RequestInit): Promise<postCommentsApiResponse> => {
+  
+  const res = await fetch(getPostCommentsApiUrl(),
+  {      
+    ...options,
+    method: 'POST',
+    headers: { 'Content-Type': 'application/json', ...options?.headers },
+    body: JSON.stringify(
+      createComment,)
   }
+)
+
+  const body = [204, 205, 304].includes(res.status) ? null : await res.text()
+  const data: postCommentsApiResponse['data'] = body ? JSON.parse(body) : {}
+
+  return { data, status: res.status, headers: res.headers } as postCommentsApiResponse
+}
 
 
 
-export const getPostCommentsApiMutationOptions = <TError = AxiosError<ErrorResponse>,
-    TContext = unknown>(options?: { mutation?:UseMutationOptions<Awaited<ReturnType<typeof postCommentsApi>>, TError,{data: CreateComment}, TContext>, axios?: AxiosRequestConfig}
+
+export const getPostCommentsApiMutationOptions = <TError = ErrorResponse,
+    TContext = unknown>(options?: { mutation?:UseMutationOptions<Awaited<ReturnType<typeof postCommentsApi>>, TError,{data: CreateComment}, TContext>, fetch?: RequestInit}
 ): UseMutationOptions<Awaited<ReturnType<typeof postCommentsApi>>, TError,{data: CreateComment}, TContext> => {
 
 const mutationKey = ['postCommentsApi'];
-const {mutation: mutationOptions, axios: axiosOptions} = options ?
+const {mutation: mutationOptions, fetch: fetchOptions} = options ?
       options.mutation && 'mutationKey' in options.mutation && options.mutation.mutationKey ?
       options
       : {...options, mutation: {...options.mutation, mutationKey}}
-      : {mutation: { mutationKey, }, axios: undefined};
+      : {mutation: { mutationKey, }, fetch: undefined};
 
       
 
@@ -1147,7 +1630,7 @@ const {mutation: mutationOptions, axios: axiosOptions} = options ?
       const mutationFn: MutationFunction<Awaited<ReturnType<typeof postCommentsApi>>, {data: CreateComment}> = (props) => {
           const {data} = props ?? {};
 
-          return  postCommentsApi(data,axiosOptions)
+          return  postCommentsApi(data,fetchOptions)
         }
 
         
@@ -1157,13 +1640,13 @@ const {mutation: mutationOptions, axios: axiosOptions} = options ?
 
     export type PostCommentsApiMutationResult = NonNullable<Awaited<ReturnType<typeof postCommentsApi>>>
     export type PostCommentsApiMutationBody = CreateComment
-    export type PostCommentsApiMutationError = AxiosError<ErrorResponse>
+    export type PostCommentsApiMutationError = ErrorResponse
 
     /**
  * @summary 新規コメントを作成
  */
-export const usePostCommentsApi = <TError = AxiosError<ErrorResponse>,
-    TContext = unknown>(options?: { mutation?:UseMutationOptions<Awaited<ReturnType<typeof postCommentsApi>>, TError,{data: CreateComment}, TContext>, axios?: AxiosRequestConfig}
+export const usePostCommentsApi = <TError = ErrorResponse,
+    TContext = unknown>(options?: { mutation?:UseMutationOptions<Awaited<ReturnType<typeof postCommentsApi>>, TError,{data: CreateComment}, TContext>, fetch?: RequestInit}
  , queryClient?: QueryClient): UseMutationResult<
         Awaited<ReturnType<typeof postCommentsApi>>,
         TError,
@@ -1180,32 +1663,64 @@ export const usePostCommentsApi = <TError = AxiosError<ErrorResponse>,
  * 指定されたIDのコメント情報を取得します
  * @summary 特定のコメントを取得
  */
-export const getCommentsByIdApi = (
-    id: string, options?: AxiosRequestConfig
- ): Promise<AxiosResponse<GetCommentsByIdApi200>> => {
+export type getCommentsByIdApiResponse200 = {
+  data: GetCommentsByIdApi200
+  status: 200
+}
+
+export type getCommentsByIdApiResponse400 = {
+  data: ErrorResponse
+  status: 400
+}
+    
+export type getCommentsByIdApiResponseComposite = getCommentsByIdApiResponse200 | getCommentsByIdApiResponse400;
+    
+export type getCommentsByIdApiResponse = getCommentsByIdApiResponseComposite & {
+  headers: Headers;
+}
+
+export const getGetCommentsByIdApiUrl = (id: string,) => {
+
+
+  
+
+  return `http://localhost:4010/api/comments/${id}`
+}
+
+export const getCommentsByIdApi = async (id: string, options?: RequestInit): Promise<getCommentsByIdApiResponse> => {
+  
+  const res = await fetch(getGetCommentsByIdApiUrl(id),
+  {      
+    ...options,
+    method: 'GET'
     
     
-    return axios.get(
-      `/api/comments/${id}`,options
-    );
   }
+)
+
+  const body = [204, 205, 304].includes(res.status) ? null : await res.text()
+  const data: getCommentsByIdApiResponse['data'] = body ? JSON.parse(body) : {}
+
+  return { data, status: res.status, headers: res.headers } as getCommentsByIdApiResponse
+}
+
 
 
 export const getGetCommentsByIdApiQueryKey = (id: string,) => {
-    return [`/api/comments/${id}`] as const;
+    return [`http://localhost:4010/api/comments/${id}`] as const;
     }
 
     
-export const getGetCommentsByIdApiQueryOptions = <TData = Awaited<ReturnType<typeof getCommentsByIdApi>>, TError = AxiosError<ErrorResponse>>(id: string, options?: { query?:Partial<UseQueryOptions<Awaited<ReturnType<typeof getCommentsByIdApi>>, TError, TData>>, axios?: AxiosRequestConfig}
+export const getGetCommentsByIdApiQueryOptions = <TData = Awaited<ReturnType<typeof getCommentsByIdApi>>, TError = ErrorResponse>(id: string, options?: { query?:Partial<UseQueryOptions<Awaited<ReturnType<typeof getCommentsByIdApi>>, TError, TData>>, fetch?: RequestInit}
 ) => {
 
-const {query: queryOptions, axios: axiosOptions} = options ?? {};
+const {query: queryOptions, fetch: fetchOptions} = options ?? {};
 
   const queryKey =  queryOptions?.queryKey ?? getGetCommentsByIdApiQueryKey(id);
 
   
 
-    const queryFn: QueryFunction<Awaited<ReturnType<typeof getCommentsByIdApi>>> = ({ signal }) => getCommentsByIdApi(id, { signal, ...axiosOptions });
+    const queryFn: QueryFunction<Awaited<ReturnType<typeof getCommentsByIdApi>>> = ({ signal }) => getCommentsByIdApi(id, { signal, ...fetchOptions });
 
       
 
@@ -1215,39 +1730,39 @@ const {query: queryOptions, axios: axiosOptions} = options ?? {};
 }
 
 export type GetCommentsByIdApiQueryResult = NonNullable<Awaited<ReturnType<typeof getCommentsByIdApi>>>
-export type GetCommentsByIdApiQueryError = AxiosError<ErrorResponse>
+export type GetCommentsByIdApiQueryError = ErrorResponse
 
 
-export function useGetCommentsByIdApi<TData = Awaited<ReturnType<typeof getCommentsByIdApi>>, TError = AxiosError<ErrorResponse>>(
+export function useGetCommentsByIdApi<TData = Awaited<ReturnType<typeof getCommentsByIdApi>>, TError = ErrorResponse>(
  id: string, options: { query:Partial<UseQueryOptions<Awaited<ReturnType<typeof getCommentsByIdApi>>, TError, TData>> & Pick<
         DefinedInitialDataOptions<
           Awaited<ReturnType<typeof getCommentsByIdApi>>,
           TError,
           Awaited<ReturnType<typeof getCommentsByIdApi>>
         > , 'initialData'
-      >, axios?: AxiosRequestConfig}
+      >, fetch?: RequestInit}
  , queryClient?: QueryClient
   ):  DefinedUseQueryResult<TData, TError> & { queryKey: DataTag<QueryKey, TData, TError> }
-export function useGetCommentsByIdApi<TData = Awaited<ReturnType<typeof getCommentsByIdApi>>, TError = AxiosError<ErrorResponse>>(
+export function useGetCommentsByIdApi<TData = Awaited<ReturnType<typeof getCommentsByIdApi>>, TError = ErrorResponse>(
  id: string, options?: { query?:Partial<UseQueryOptions<Awaited<ReturnType<typeof getCommentsByIdApi>>, TError, TData>> & Pick<
         UndefinedInitialDataOptions<
           Awaited<ReturnType<typeof getCommentsByIdApi>>,
           TError,
           Awaited<ReturnType<typeof getCommentsByIdApi>>
         > , 'initialData'
-      >, axios?: AxiosRequestConfig}
+      >, fetch?: RequestInit}
  , queryClient?: QueryClient
   ):  UseQueryResult<TData, TError> & { queryKey: DataTag<QueryKey, TData, TError> }
-export function useGetCommentsByIdApi<TData = Awaited<ReturnType<typeof getCommentsByIdApi>>, TError = AxiosError<ErrorResponse>>(
- id: string, options?: { query?:Partial<UseQueryOptions<Awaited<ReturnType<typeof getCommentsByIdApi>>, TError, TData>>, axios?: AxiosRequestConfig}
+export function useGetCommentsByIdApi<TData = Awaited<ReturnType<typeof getCommentsByIdApi>>, TError = ErrorResponse>(
+ id: string, options?: { query?:Partial<UseQueryOptions<Awaited<ReturnType<typeof getCommentsByIdApi>>, TError, TData>>, fetch?: RequestInit}
  , queryClient?: QueryClient
   ):  UseQueryResult<TData, TError> & { queryKey: DataTag<QueryKey, TData, TError> }
 /**
  * @summary 特定のコメントを取得
  */
 
-export function useGetCommentsByIdApi<TData = Awaited<ReturnType<typeof getCommentsByIdApi>>, TError = AxiosError<ErrorResponse>>(
- id: string, options?: { query?:Partial<UseQueryOptions<Awaited<ReturnType<typeof getCommentsByIdApi>>, TError, TData>>, axios?: AxiosRequestConfig}
+export function useGetCommentsByIdApi<TData = Awaited<ReturnType<typeof getCommentsByIdApi>>, TError = ErrorResponse>(
+ id: string, options?: { query?:Partial<UseQueryOptions<Awaited<ReturnType<typeof getCommentsByIdApi>>, TError, TData>>, fetch?: RequestInit}
  , queryClient?: QueryClient 
  ):  UseQueryResult<TData, TError> & { queryKey: DataTag<QueryKey, TData, TError> } {
 
@@ -1267,30 +1782,62 @@ export function useGetCommentsByIdApi<TData = Awaited<ReturnType<typeof getComme
  * 指定されたIDのコメントを更新します
  * @summary コメントを更新
  */
-export const putCommentsByIdApi = (
-    id: string,
-    updateComment: UpdateComment, options?: AxiosRequestConfig
- ): Promise<AxiosResponse<PutCommentsByIdApi200>> => {
+export type putCommentsByIdApiResponse200 = {
+  data: PutCommentsByIdApi200
+  status: 200
+}
+
+export type putCommentsByIdApiResponse400 = {
+  data: ErrorResponse
+  status: 400
+}
     
+export type putCommentsByIdApiResponseComposite = putCommentsByIdApiResponse200 | putCommentsByIdApiResponse400;
     
-    return axios.put(
-      `/api/comments/${id}`,
-      updateComment,options
-    );
+export type putCommentsByIdApiResponse = putCommentsByIdApiResponseComposite & {
+  headers: Headers;
+}
+
+export const getPutCommentsByIdApiUrl = (id: string,) => {
+
+
+  
+
+  return `http://localhost:4010/api/comments/${id}`
+}
+
+export const putCommentsByIdApi = async (id: string,
+    updateComment: UpdateComment, options?: RequestInit): Promise<putCommentsByIdApiResponse> => {
+  
+  const res = await fetch(getPutCommentsByIdApiUrl(id),
+  {      
+    ...options,
+    method: 'PUT',
+    headers: { 'Content-Type': 'application/json', ...options?.headers },
+    body: JSON.stringify(
+      updateComment,)
   }
+)
+
+  const body = [204, 205, 304].includes(res.status) ? null : await res.text()
+  const data: putCommentsByIdApiResponse['data'] = body ? JSON.parse(body) : {}
+
+  return { data, status: res.status, headers: res.headers } as putCommentsByIdApiResponse
+}
 
 
 
-export const getPutCommentsByIdApiMutationOptions = <TError = AxiosError<ErrorResponse>,
-    TContext = unknown>(options?: { mutation?:UseMutationOptions<Awaited<ReturnType<typeof putCommentsByIdApi>>, TError,{id: string;data: UpdateComment}, TContext>, axios?: AxiosRequestConfig}
+
+export const getPutCommentsByIdApiMutationOptions = <TError = ErrorResponse,
+    TContext = unknown>(options?: { mutation?:UseMutationOptions<Awaited<ReturnType<typeof putCommentsByIdApi>>, TError,{id: string;data: UpdateComment}, TContext>, fetch?: RequestInit}
 ): UseMutationOptions<Awaited<ReturnType<typeof putCommentsByIdApi>>, TError,{id: string;data: UpdateComment}, TContext> => {
 
 const mutationKey = ['putCommentsByIdApi'];
-const {mutation: mutationOptions, axios: axiosOptions} = options ?
+const {mutation: mutationOptions, fetch: fetchOptions} = options ?
       options.mutation && 'mutationKey' in options.mutation && options.mutation.mutationKey ?
       options
       : {...options, mutation: {...options.mutation, mutationKey}}
-      : {mutation: { mutationKey, }, axios: undefined};
+      : {mutation: { mutationKey, }, fetch: undefined};
 
       
 
@@ -1298,7 +1845,7 @@ const {mutation: mutationOptions, axios: axiosOptions} = options ?
       const mutationFn: MutationFunction<Awaited<ReturnType<typeof putCommentsByIdApi>>, {id: string;data: UpdateComment}> = (props) => {
           const {id,data} = props ?? {};
 
-          return  putCommentsByIdApi(id,data,axiosOptions)
+          return  putCommentsByIdApi(id,data,fetchOptions)
         }
 
         
@@ -1308,13 +1855,13 @@ const {mutation: mutationOptions, axios: axiosOptions} = options ?
 
     export type PutCommentsByIdApiMutationResult = NonNullable<Awaited<ReturnType<typeof putCommentsByIdApi>>>
     export type PutCommentsByIdApiMutationBody = UpdateComment
-    export type PutCommentsByIdApiMutationError = AxiosError<ErrorResponse>
+    export type PutCommentsByIdApiMutationError = ErrorResponse
 
     /**
  * @summary コメントを更新
  */
-export const usePutCommentsByIdApi = <TError = AxiosError<ErrorResponse>,
-    TContext = unknown>(options?: { mutation?:UseMutationOptions<Awaited<ReturnType<typeof putCommentsByIdApi>>, TError,{id: string;data: UpdateComment}, TContext>, axios?: AxiosRequestConfig}
+export const usePutCommentsByIdApi = <TError = ErrorResponse,
+    TContext = unknown>(options?: { mutation?:UseMutationOptions<Awaited<ReturnType<typeof putCommentsByIdApi>>, TError,{id: string;data: UpdateComment}, TContext>, fetch?: RequestInit}
  , queryClient?: QueryClient): UseMutationResult<
         Awaited<ReturnType<typeof putCommentsByIdApi>>,
         TError,
@@ -1331,28 +1878,60 @@ export const usePutCommentsByIdApi = <TError = AxiosError<ErrorResponse>,
  * 指定されたIDのコメントを削除します
  * @summary コメントを削除
  */
-export const deleteCommentsByIdApi = (
-    id: string, options?: AxiosRequestConfig
- ): Promise<AxiosResponse<void>> => {
+export type deleteCommentsByIdApiResponse204 = {
+  data: void
+  status: 204
+}
+
+export type deleteCommentsByIdApiResponse400 = {
+  data: ErrorResponse
+  status: 400
+}
+    
+export type deleteCommentsByIdApiResponseComposite = deleteCommentsByIdApiResponse204 | deleteCommentsByIdApiResponse400;
+    
+export type deleteCommentsByIdApiResponse = deleteCommentsByIdApiResponseComposite & {
+  headers: Headers;
+}
+
+export const getDeleteCommentsByIdApiUrl = (id: string,) => {
+
+
+  
+
+  return `http://localhost:4010/api/comments/${id}`
+}
+
+export const deleteCommentsByIdApi = async (id: string, options?: RequestInit): Promise<deleteCommentsByIdApiResponse> => {
+  
+  const res = await fetch(getDeleteCommentsByIdApiUrl(id),
+  {      
+    ...options,
+    method: 'DELETE'
     
     
-    return axios.delete(
-      `/api/comments/${id}`,options
-    );
   }
+)
+
+  const body = [204, 205, 304].includes(res.status) ? null : await res.text()
+  const data: deleteCommentsByIdApiResponse['data'] = body ? JSON.parse(body) : {}
+
+  return { data, status: res.status, headers: res.headers } as deleteCommentsByIdApiResponse
+}
 
 
 
-export const getDeleteCommentsByIdApiMutationOptions = <TError = AxiosError<ErrorResponse>,
-    TContext = unknown>(options?: { mutation?:UseMutationOptions<Awaited<ReturnType<typeof deleteCommentsByIdApi>>, TError,{id: string}, TContext>, axios?: AxiosRequestConfig}
+
+export const getDeleteCommentsByIdApiMutationOptions = <TError = ErrorResponse,
+    TContext = unknown>(options?: { mutation?:UseMutationOptions<Awaited<ReturnType<typeof deleteCommentsByIdApi>>, TError,{id: string}, TContext>, fetch?: RequestInit}
 ): UseMutationOptions<Awaited<ReturnType<typeof deleteCommentsByIdApi>>, TError,{id: string}, TContext> => {
 
 const mutationKey = ['deleteCommentsByIdApi'];
-const {mutation: mutationOptions, axios: axiosOptions} = options ?
+const {mutation: mutationOptions, fetch: fetchOptions} = options ?
       options.mutation && 'mutationKey' in options.mutation && options.mutation.mutationKey ?
       options
       : {...options, mutation: {...options.mutation, mutationKey}}
-      : {mutation: { mutationKey, }, axios: undefined};
+      : {mutation: { mutationKey, }, fetch: undefined};
 
       
 
@@ -1360,7 +1939,7 @@ const {mutation: mutationOptions, axios: axiosOptions} = options ?
       const mutationFn: MutationFunction<Awaited<ReturnType<typeof deleteCommentsByIdApi>>, {id: string}> = (props) => {
           const {id} = props ?? {};
 
-          return  deleteCommentsByIdApi(id,axiosOptions)
+          return  deleteCommentsByIdApi(id,fetchOptions)
         }
 
         
@@ -1370,13 +1949,13 @@ const {mutation: mutationOptions, axios: axiosOptions} = options ?
 
     export type DeleteCommentsByIdApiMutationResult = NonNullable<Awaited<ReturnType<typeof deleteCommentsByIdApi>>>
     
-    export type DeleteCommentsByIdApiMutationError = AxiosError<ErrorResponse>
+    export type DeleteCommentsByIdApiMutationError = ErrorResponse
 
     /**
  * @summary コメントを削除
  */
-export const useDeleteCommentsByIdApi = <TError = AxiosError<ErrorResponse>,
-    TContext = unknown>(options?: { mutation?:UseMutationOptions<Awaited<ReturnType<typeof deleteCommentsByIdApi>>, TError,{id: string}, TContext>, axios?: AxiosRequestConfig}
+export const useDeleteCommentsByIdApi = <TError = ErrorResponse,
+    TContext = unknown>(options?: { mutation?:UseMutationOptions<Awaited<ReturnType<typeof deleteCommentsByIdApi>>, TError,{id: string}, TContext>, fetch?: RequestInit}
  , queryClient?: QueryClient): UseMutationResult<
         Awaited<ReturnType<typeof deleteCommentsByIdApi>>,
         TError,

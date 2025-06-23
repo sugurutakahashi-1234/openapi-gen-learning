@@ -20,7 +20,11 @@ import type { GetPostsApiParams } from "../generated/model";
  * 投稿一覧を取得するフック
  */
 export const usePosts = (params?: GetPostsApiParams) => {
-  return useGetPostsApi(params);
+  return useGetPostsApi(params, {
+    query: {
+      select: (data) => data.data.data, // 投稿配列を直接返す
+    },
+  });
 };
 
 /**
