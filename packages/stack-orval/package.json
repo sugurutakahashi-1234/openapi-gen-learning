@@ -13,7 +13,7 @@
   },
   "dependencies": {
     "@tanstack/react-query": "^5.81.2",
-    "axios": "^1.10.0",
+    "axios": "^1.11.0",
     "react": "^19.1.0",
     "react-dom": "^19.1.0",
     "zod": "^3.25.67"
